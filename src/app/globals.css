@@ -12,12 +12,14 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/*
+ * This app's UI intentionally has no dark variant — it's a fixed light
+ * palette matching collection-system-mockup.html (bg-gray-100 page,
+ * bg-white cards/forms). Do not reintroduce a prefers-color-scheme
+ * override here: --foreground cascades via body's `color` into every
+ * input/select, and flipping it near-white against bg-white form fields
+ * makes typed text invisible.
+ */
 
 body {
   background: var(--background);

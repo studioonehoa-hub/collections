@@ -56,7 +56,7 @@ export default function LoginPage() {
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full mb-4 rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-700"
+          className="w-full mb-4 rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-700"
         />
 
         <label htmlFor="password" className="block text-xs font-semibold text-gray-700 mb-1">
@@ -69,7 +69,7 @@ export default function LoginPage() {
           required
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full mb-6 rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-700"
+          className="w-full mb-6 rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-700"
         />
 
         <button
