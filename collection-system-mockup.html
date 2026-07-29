@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Collection System — Mockup</title>
+<style>
+  :root{
+    --bg:#f4f5f7; --card:#fff; --ink:#1a1d23; --muted:#6b7280; --line:#e5e7eb;
+    --accent:#1d4ed8; --accent-soft:#eff6ff; --green:#047857; --green-soft:#ecfdf5;
+    --red:#b91c1c; --red-soft:#fef2f2; --amber:#b45309; --amber-soft:#fffbeb;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:14px}
+  .topbar{background:#111827;color:#fff;padding:10px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .topbar .logo{font-weight:700;font-size:15px}
+  .topbar .logo span{color:#93c5fd}
+  .rolebox{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:12px;color:#9ca3af}
+  .rolebox select{background:#1f2937;color:#fff;border:1px solid #374151;border-radius:6px;padding:5px 8px;font-size:12px}
+  nav{background:#fff;border-bottom:1px solid var(--line);padding:0 20px;display:flex;gap:2px;overflow-x:auto}
+  nav button{border:none;background:none;padding:12px 14px;font-size:13px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap}
+  nav button.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+  nav button:disabled{opacity:.3;cursor:not-allowed}
+  main{max-width:1000px;margin:0 auto;padding:20px}
+  .screen{display:none}.screen.active{display:block}
+  h2{font-size:17px;margin-bottom:4px}
+  .sub{color:var(--muted);font-size:12.5px;margin-bottom:16px}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px}
+  .card .k{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  .card .v{font-size:22px;font-weight:700;margin-top:4px}
+  .card .d{font-size:11.5px;color:var(--muted);margin-top:2px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:16px}
+  .panel h3{font-size:14px;margin-bottom:12px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--line)}
+  td{padding:9px 10px;border-bottom:1px solid #f1f2f4}
+  tr:last-child td{border-bottom:none}
+  .num{text-align:right;font-variant-numeric:tabular-nums}
+  th.num{text-align:right}
+  .pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:11px;font-weight:600}
+  .ok{background:var(--green-soft);color:var(--green)} .bad{background:var(--red-soft);color:var(--red)} .part{background:var(--amber-soft);color:var(--amber)} .info{background:var(--accent-soft);color:var(--accent)}
+  .btn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer}
+  .btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+  .btn.sm{padding:5px 10px;font-size:12px}
+  form .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:12px}
+  label{display:block;font-size:12px;font-weight:600;margin-bottom:4px;color:#374151}
+  input,select{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-size:13px;background:#fff}
+  .toolbar{display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+  .toolbar input{max-width:260px}
+  .note{background:var(--accent-soft);border:1px solid #bfdbfe;color:#1e40af;border-radius:8px;padding:10px 12px;font-size:12.5px;margin-bottom:16px}
+  .prog{height:8px;background:#e5e7eb;border-radius:99px;overflow:hidden;margin-top:8px}
+  .prog>div{height:100%;background:var(--green);width:62%}
+  .locktag{font-size:11px;color:var(--muted);margin-left:6px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">🏢 Vista Court <span>Collections</span></div>
+  <div class="rolebox">
+    Viewing as:
+    <select id="role" onchange="setRole(this.value)">
+      <option value="super">Super Admin</option>
+      <option value="admin">Admin</option>
+      <option value="encoder">Encoder</option>
+      <option value="report">Report Generator</option>
+    </select>
+  </div>
+</div>
+
+<nav id="nav">
+  <button data-s="dash" data-roles="super,admin,report" onclick="go('dash')">Dashboard</button>
+  <button data-s="residents" data-roles="super" onclick="go('residents')">Residents 🔒</button>
+  <button data-s="lookup" data-roles="super,admin,encoder,report" onclick="go('lookup')">Resident Lookup</button>
+  <button data-s="billing" data-roles="super,admin" onclick="go('billing')">Billing</button>
+  <button data-s="pay" data-roles="super,admin,encoder" onclick="go('pay')">Record Payment</button>
+  <button data-s="levy" data-roles="super,admin,encoder" onclick="go('levy')">Special Payment</button>
+  <button data-s="ledger" data-roles="super,admin,encoder,report" onclick="go('ledger')">Unit Ledger</button>
+  <button data-s="out" data-roles="super,admin,report" onclick="go('out')">Outstanding</button>
+</nav>
+
+<main>
+
+<!-- DASHBOARD -->
+<section class="screen" id="dash">
+  <h2>Dashboard</h2>
+  <div class="sub">July 2026 · all figures in PHP</div>
+  <div class="cards">
+    <div class="card"><div class="k">Collected this month</div><div class="v">₱46,500</div><div class="d">31 of 40 units paid</div></div>
+    <div class="card"><div class="k">Outstanding (Jul)</div><div class="v" style="color:var(--red)">₱13,500</div><div class="d">9 units unpaid</div></div>
+    <div class="card"><div class="k">Levy: Repair Fund 2026</div><div class="v">₱124,000</div><div class="d">of ₱200,000 target<div class="prog"><div></div></div></div></div>
+    <div class="card"><div class="k">By mode (Jul)</div><div class="v" style="font-size:13px;font-weight:400;line-height:1.7">Bank ₱31,500<br>Cash ₱9,000 · GCash ₱6,000</div></div>
+  </div>
+  <div class="panel">
+    <h3>Recent entries</h3>
+    <table>
+      <tr><th>Date</th><th>Unit</th><th>Name</th><th>Type</th><th>Mode</th><th>Received</th><th class="num">Amount</th></tr>
+      <tr><td>16 Jul 2026</td><td>3-B</td><td>M. Santos</td><td><span class="pill info">Monthly</span></td><td>Bank transfer</td><td>Bank</td><td class="num">₱1,500.00</td></tr>
+      <tr><td>16 Jul 2026</td><td>5-A</td><td>R. Dela Cruz</td><td><span class="pill part">Levy</span></td><td>Cash</td><td>Admin office</td><td class="num">₱5,000.00</td></tr>
+      <tr><td>15 Jul 2026</td><td>2-C</td><td>J. Reyes</td><td><span class="pill info">Monthly</span></td><td>GCash</td><td>Bank</td><td class="num">₱1,500.00</td></tr>
+      <tr><td>14 Jul 2026</td><td>1-D</td><td>A. Garcia</td><td><span class="pill info">Monthly</span></td><td>Cheque</td><td>Admin office</td><td class="num">₱1,500.00</td></tr>
+    </table>
+  </div>
+  <button class="btn ghost">⬇ Export month to CSV</button>
+</section>
+
+<!-- RESIDENTS (SUPER ADMIN ONLY) -->
+<section class="screen" id="residents">
+  <h2>Residents — Full Database 🔒</h2>
+  <div class="sub">Super Admin only · the only screen where the resident list can be viewed, exported, or printed in aggregate</div>
+  <div class="toolbar">
+    <input placeholder="Search name or unit…">
+    <button class="btn">+ Add resident</button>
+    <button class="btn ghost">⬇ Export list</button>
+    <button class="btn ghost">🖨 Print</button>
+  </div>
+  <div class="panel">
+    <table>
+      <tr><th>Unit</th><th>Name</th><th>Billing contact 1</th><th>Billing contact 2</th><th>Group</th><th class="num">Monthly dues</th><th>Status</th><th></th></tr>
+      <tr><td>1-A</td><td>P. Lim</td><td>0917 ··· 4521</td><td>plim@···.com</td><td>Standard</td><td class="num">₱1,500.00</td><td><span class="pill ok">Active</span></td><td><button class="btn ghost sm">Edit</button></td></tr>
+      <tr><td>1-B</td><td>C. Tan</td><td>0918 ··· 8830</td><td>ctan@···.com</td><td>Standard</td><td class="num">₱1,500.00</td><td><span class="pill ok">Active</span></td><td><button class="btn ghost sm">Edit</button></td></tr>
+      <tr><td>2-C</td><td>J. Reyes</td><td>0920 ··· 1104</td><td>0917 ··· 2288</td><td>Penthouse</td><td class="num">₱1,800.00</td><td><span class="pill ok">Active</span></td><td><button class="btn ghost sm">Edit</button></td></tr>
+      <tr><td>3-B</td><td>M. Santos</td><td>msantos@···.com</td><td>0919 ··· 7745</td><td>Standard <span class="pill part">override ₱1,650</span></td><td class="num">₱1,650.00</td><td><span class="pill ok">Active</span></td><td><button class="btn ghost sm">Edit</button></td></tr>
+      <tr><td>4-D</td><td>— vacant —</td><td></td><td></td><td>—</td><td class="num">₱0.00</td><td><span class="pill bad">Inactive</span></td><td><button class="btn ghost sm">Edit</button></td></tr>
+    </table>
+  </div>
+  <div class="note">🔒 Server-side rule: aggregate list, export, and print endpoints reject any role except Super Admin. Other roles use Resident Lookup (one record at a time).</div>
+</section>
+
+<!-- RESIDENT LOOKUP (ALL OTHER ROLES) -->
+<section class="screen" id="lookup">
+  <h2>Resident Lookup</h2>
+  <div class="sub">Search one resident at a time · no list browsing, no export</div>
+  <div class="toolbar">
+    <input placeholder="Type exact name or unit no…" value="3-B">
+    <button class="btn">Search</button>
+  </div>
+  <div class="panel">
+    <h3>3-B — M. Santos</h3>
+    <table>
+      <tr><td style="width:200px;color:var(--muted)">Group / dues</td><td>Standard (override) — ₱1,650.00/mo</td></tr>
+      <tr><td style="color:var(--muted)">Billing contact 1</td><td>msantos@···.com</td></tr>
+      <tr><td style="color:var(--muted)">Billing contact 2</td><td>0919 ··· 7745</td></tr>
+      <tr><td style="color:var(--muted)">Status</td><td><span class="pill ok">Active</span></td></tr>
+    </table>
+    <div style="margin-top:12px"><button class="btn ghost sm">View ledger</button> <button class="btn ghost sm">Record payment</button></div>
+  </div>
+</section>
+
+<!-- BILLING -->
+<section class="screen" id="billing">
+  <h2>Billing</h2>
+  <div class="sub">Jul 2026 billing run · amounts from dues groups (or per-resident override)</div>
+  <div class="cards">
+    <div class="card"><div class="k">Billed (Jul)</div><div class="v">₱61,200</div><div class="d">40 units</div></div>
+    <div class="card"><div class="k">Sent</div><div class="v">36 / 40</div><div class="d">4 pending dispatch</div></div>
+    <div class="card"><div class="k">Received / ack'd</div><div class="v">29 / 36</div></div>
+  </div>
+  <div class="panel">
+    <h3>Dues groups</h3>
+    <table>
+      <tr><th>Group</th><th class="num">Monthly amount</th><th class="num">Members</th><th></th></tr>
+      <tr><td>Standard</td><td class="num">₱1,500.00</td><td class="num">34</td><td><button class="btn ghost sm">Edit</button></td></tr>
+      <tr><td>Penthouse</td><td class="num">₱1,800.00</td><td class="num">4</td><td><button class="btn ghost sm">Edit</button></td></tr>
+      <tr><td>Commercial</td><td class="num">₱2,400.00</td><td class="num">2</td><td><button class="btn ghost sm">Edit</button></td></tr>
+    </table>
+    <div style="margin-top:12px"><button class="btn ghost sm">+ Add group</button></div>
+  </div>
+  <div class="panel">
+    <h3>Billing run — Jul 2026</h3>
+    <div class="toolbar"><button class="btn">Generate bills for Jul 2026</button><select style="max-width:170px"><option>All</option><option>Not sent</option><option>Not received</option></select></div>
+    <table>
+      <tr><th>Unit</th><th>Name</th><th class="num">Amount</th><th>Sent via</th><th>Sent</th><th>Received</th><th></th></tr>
+      <tr><td>1-A</td><td>P. Lim</td><td class="num">₱1,500.00</td><td>Email</td><td>01 Jul 2026</td><td><span class="pill ok">Ack'd 02 Jul</span></td><td></td></tr>
+      <tr><td>1-B</td><td>C. Tan</td><td class="num">₱1,500.00</td><td>SMS</td><td>01 Jul 2026</td><td><span class="pill part">Pending</span></td><td><button class="btn ghost sm">Mark received</button></td></tr>
+      <tr><td>2-C</td><td>J. Reyes</td><td class="num">₱1,800.00</td><td>Printed</td><td>02 Jul 2026</td><td><span class="pill ok">Received 03 Jul</span></td><td></td></tr>
+      <tr><td>3-B</td><td>M. Santos</td><td class="num">₱1,650.00</td><td><span class="pill bad">Not sent</span></td><td>—</td><td>—</td><td><button class="btn ghost sm">Mark sent</button></td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- RECORD PAYMENT -->
+<section class="screen" id="pay">
+  <h2>Record Payment</h2>
+  <div class="sub">Monthly dues entry · admin & encoder</div>
+  <div class="panel">
+    <form onsubmit="return false">
+      <div class="row">
+        <div><label>Resident / Unit</label><select><option>3-B — M. Santos</option><option>5-A — R. Dela Cruz</option></select></div>
+        <div><label>For period</label><select><option>Jul 2026</option><option>Aug 2026</option><option>Jun 2026 (arrears)</option></select></div>
+      </div>
+      <div class="row">
+        <div><label>Date received</label><input type="date" value="2026-07-17"></div>
+        <div><label>Amount (₱)</label><input value="1,500.00"></div>
+      </div>
+      <div class="row">
+        <div><label>Mode</label><select><option>Bank transfer</option><option>Cash</option><option>Cheque</option><option>GCash / online</option></select></div>
+        <div><label>Received by</label><select><option>Bank</option><option>Admin office</option></select></div>
+      </div>
+      <div class="row"><div><label>Notes (optional)</label><input placeholder="OR #, remarks…"></div></div>
+      <button class="btn">Save payment</button>
+      <button class="btn ghost">Save + add another</button>
+    </form>
+  </div>
+  <div class="note">After saving, entry appears in Recent entries and updates the unit's ledger and outstanding status automatically.</div>
+</section>
+
+<!-- SPECIAL PAYMENT -->
+<section class="screen" id="levy">
+  <h2>Special Payment</h2>
+  <div class="sub">Active levy: <b>Building Repair Fund 2026</b> — ₱5,000/unit</div>
+  <div class="panel">
+    <form onsubmit="return false">
+      <div class="row">
+        <div><label>Resident / Unit</label><select><option>5-A — R. Dela Cruz</option><option>1-A — P. Lim</option></select></div>
+        <div><label>Date received</label><input type="date" value="2026-07-17"></div>
+      </div>
+      <div class="row">
+        <div><label>Amount paid (₱)</label><input value="5,000.00"></div>
+        <div><label>Mode</label><select><option>Cash</option><option>Bank transfer</option><option>Cheque</option><option>GCash / online</option></select></div>
+        <div><label>Received by</label><select><option>Admin office</option><option>Bank</option></select></div>
+      </div>
+      <button class="btn">Save special payment</button>
+    </form>
+  </div>
+  <div class="panel">
+    <h3>Levy progress — 25 of 40 units paid</h3>
+    <table>
+      <tr><th>Unit</th><th>Name</th><th class="num">Paid</th><th>Date</th><th>Status</th></tr>
+      <tr><td>5-A</td><td>R. Dela Cruz</td><td class="num">₱5,000.00</td><td>16 Jul 2026</td><td><span class="pill ok">Paid</span></td></tr>
+      <tr><td>1-A</td><td>P. Lim</td><td class="num">₱2,500.00</td><td>02 Jul 2026</td><td><span class="pill part">Partial</span></td></tr>
+      <tr><td>2-C</td><td>J. Reyes</td><td class="num">—</td><td>—</td><td><span class="pill bad">Unpaid</span></td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- LEDGER -->
+<section class="screen" id="ledger">
+  <h2>Unit Ledger</h2>
+  <div class="toolbar">
+    <select style="max-width:280px"><option>3-B — M. Santos · dues ₱1,500/mo</option></select>
+    <button class="btn ghost">⬇ Export ledger</button>
+  </div>
+  <div class="cards">
+    <div class="card"><div class="k">Paid YTD 2026</div><div class="v">₱10,500</div></div>
+    <div class="card"><div class="k">Arrears</div><div class="v" style="color:var(--red)">₱1,500</div><div class="d">Jun 2026 unpaid</div></div>
+    <div class="card"><div class="k">Levy contribution</div><div class="v">₱5,000</div><div class="d">fully paid</div></div>
+  </div>
+  <div class="panel">
+    <table>
+      <tr><th>Date</th><th>Type</th><th>Period / Levy</th><th>Mode</th><th>Received</th><th class="num">Amount</th></tr>
+      <tr><td>16 Jul 2026</td><td><span class="pill info">Monthly</span></td><td>Jul 2026</td><td>Bank transfer</td><td>Bank</td><td class="num">₱1,500.00</td></tr>
+      <tr><td>03 May 2026</td><td><span class="pill part">Levy</span></td><td>Repair Fund 2026</td><td>Cash</td><td>Admin office</td><td class="num">₱5,000.00</td></tr>
+      <tr><td>05 May 2026</td><td><span class="pill info">Monthly</span></td><td>May 2026</td><td>GCash</td><td>Bank</td><td class="num">₱1,500.00</td></tr>
+      <tr><td>04 Apr 2026</td><td><span class="pill info">Monthly</span></td><td>Apr 2026</td><td>Cash</td><td>Admin office</td><td class="num">₱1,500.00</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- OUTSTANDING -->
+<section class="screen" id="out">
+  <h2>Outstanding Report</h2>
+  <div class="toolbar">
+    <select style="max-width:180px"><option>Jul 2026</option><option>Jun 2026</option></select>
+    <select style="max-width:180px"><option>All units</option><option>Unpaid only</option></select>
+    <button class="btn ghost">⬇ Export CSV</button>
+  </div>
+  <div class="panel">
+    <table>
+      <tr><th>Unit</th><th>Name</th><th class="num">Expected</th><th class="num">Paid</th><th class="num">Balance</th><th>Status</th></tr>
+      <tr><td>1-A</td><td>P. Lim</td><td class="num">₱1,500.00</td><td class="num">₱1,500.00</td><td class="num">₱0.00</td><td><span class="pill ok">Paid</span></td></tr>
+      <tr><td>1-B</td><td>C. Tan</td><td class="num">₱1,500.00</td><td class="num">₱0.00</td><td class="num">₱1,500.00</td><td><span class="pill bad">Unpaid</span></td></tr>
+      <tr><td>2-C</td><td>J. Reyes</td><td class="num">₱1,800.00</td><td class="num">₱900.00</td><td class="num">₱900.00</td><td><span class="pill part">Partial</span></td></tr>
+      <tr><td>3-B</td><td>M. Santos</td><td class="num">₱1,500.00</td><td class="num">₱1,500.00</td><td class="num">₱0.00</td><td><span class="pill ok">Paid</span></td></tr>
+      <tr><td colspan="2"><b>Total (40 units)</b></td><td class="num"><b>₱61,200.00</b></td><td class="num"><b>₱46,500.00</b></td><td class="num"><b style="color:var(--red)">₱14,700.00</b></td><td></td></tr>
+    </table>
+  </div>
+  <div class="note">Includes arrears view: switching period shows unpaid months per unit cumulatively.</div>
+</section>
+
+</main>
+
+<script>
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active',s.id===id));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.s===id));
+}
+function setRole(r){
+  let first=null;
+  document.querySelectorAll('nav button').forEach(b=>{
+    const allowed=b.dataset.roles.split(',').includes(r);
+    b.disabled=!allowed;
+    if(allowed&&!first)first=b.dataset.s;
+  });
+  go(first);
+}
+setRole('admin');
+</script>
+</body>
+</html>
