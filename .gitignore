@@ -37,6 +37,13 @@ yarn-error.log*
 # vercel
 .vercel
 
+# personal Claude Code overrides (permission allowlist etc.) — not shared
+.claude/settings.local.json
+
+# throwaway verification scripts/output (prefixed _ by convention)
+/_*.mjs
+/_*.html
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

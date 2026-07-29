@@ -26,6 +26,17 @@
 --     go through void_payment()/void_special_payment() (SECURITY DEFINER,
 --     admin+ only), which flips status to 'voided' and stamps who/when/why
 --     rather than editing or deleting the original row.
+--   - resident_report_directory: id/unit_no/name/status ONLY — no contacts,
+--     no dues data — for the aggregate financial reports (Billing run,
+--     Outstanding, Dashboard) that are explicitly spec'd to show unit+name
+--     for admin/report_generator (mirrors "payment exports contain unit no
+--     + name only, no contact details"). Deliberately excludes encoder, who
+--     stays on the unit-only resident_directory — encoder's access is
+--     single-lookup only, never an aggregate roster of any shape.
+--   - dues_group_summary: per-group active member counts for the Billing
+--     screen, without exposing which resident belongs to which group by
+--     name — restricted to super_admin/admin (the only roles that manage
+--     billing).
 -- ============================================================
 
 -- ---------- Helper: current caller's role ----------
@@ -135,6 +146,37 @@ create or replace view public.resident_directory as
   select id, unit_no, status from public.residents;
 
 grant select on public.resident_directory to authenticated;
+
+-- Aggregate financial-report projection: id/unit_no/name/status ONLY — no
+-- contacts, no dues_group_id, no override. Used by Billing run, Outstanding,
+-- and Dashboard, which are spec'd to show unit+name (same allowance as a
+-- payment CSV export) for super_admin/admin/report_generator. The WHERE
+-- clause is the actual gate: encoder gets zero rows back, not an error,
+-- consistent with how RLS denies SELECT everywhere else in this schema.
+-- Never add another column here — that's the whole reason this view is
+-- separate from the plain payments/billings/special_payments access those
+-- roles already have.
+create or replace view public.resident_report_directory as
+  select id, unit_no, name, status
+  from public.residents
+  where public.current_user_role() in ('super_admin', 'admin', 'report_generator');
+
+grant select on public.resident_report_directory to authenticated;
+
+-- Per-group active member counts for the Billing screen. Exposes a count,
+-- never which resident belongs to which group by name/unit.
+create or replace view public.dues_group_summary as
+  select
+    g.id,
+    g.name,
+    g.monthly_amount,
+    count(r.id) filter (where r.status = 'active') as member_count
+  from public.dues_groups g
+  left join public.residents r on r.dues_group_id = g.id
+  where public.current_user_role() in ('super_admin', 'admin')
+  group by g.id, g.name, g.monthly_amount;
+
+grant select on public.dues_group_summary to authenticated;
 
 -- Single-resident, exact-match lookup (name or unit_no) for every role.
 -- Returns the full record (contacts included, as shown on the Resident
