@@ -9,15 +9,22 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="min-h-screen flex flex-col bg-neutral-950">
-      <div className="h-2 bg-black" />
-      <header className="bg-white text-neutral-800 px-5 py-2.5 flex items-center gap-4 flex-wrap">
-        <div className="leading-tight">
-          <div className="font-black text-[23px] uppercase tracking-tight text-neutral-900">Koolector</div>
-          <div className="text-[10px] text-neutral-500 tracking-wide -mt-0.5">
+      <header className="relative bg-white text-neutral-800 px-5 py-2.5 flex items-center gap-4 flex-wrap">
+        <div
+          aria-hidden
+          className="absolute inset-x-0 top-0 bg-black pointer-events-none"
+          style={{
+            height: 54,
+            clipPath: "polygon(0 0, 100% 0, 100% 10px, 240px 10px, 200px 54px, 0 54px)",
+          }}
+        />
+        <div className="leading-tight relative z-10 pl-1">
+          <div className="font-black text-[23px] uppercase tracking-tight text-white">Koolector</div>
+          <div className="text-[10px] text-neutral-300 tracking-wide -mt-0.5">
             Billing and Collections Mastered
           </div>
         </div>
-        <div className="ml-auto flex items-center gap-3 text-xs text-neutral-500">
+        <div className="ml-auto flex items-center gap-3 text-xs text-neutral-500 relative z-10">
           <span>
             {user.email} · <span className="text-neutral-700">{ROLE_LABEL[user.role]}</span>
           </span>
