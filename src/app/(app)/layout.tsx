@@ -12,10 +12,11 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <header className="relative bg-white text-neutral-800 px-5 py-2.5 flex items-center gap-4 flex-wrap">
         <div
           aria-hidden
-          className="absolute inset-x-0 top-0 bg-black pointer-events-none"
+          className="absolute inset-x-0 top-0 bg-gray-900 pointer-events-none"
           style={{
             height: 54,
-            clipPath: "polygon(0 0, 100% 0, 100% 10px, 240px 10px, 200px 54px, 0 54px)",
+            clipPath:
+              "path('M 0,0 L 4000,0 L 4000,10 L 300,10 C 280,10 280,54 260,54 L 60,54 C 40,54 40,10 20,10 L 0,10 Z')",
           }}
         />
         <div className="leading-tight relative z-10 pl-1">
