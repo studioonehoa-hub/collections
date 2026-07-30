@@ -9,6 +9,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="min-h-screen flex flex-col bg-neutral-950">
+      <div className="h-2 bg-black" />
       <header className="bg-white text-neutral-800 px-5 py-2.5 flex items-center gap-4 flex-wrap">
         <div className="leading-tight">
           <div className="font-black text-[23px] uppercase tracking-tight text-neutral-900">Koolector</div>
