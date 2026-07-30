@@ -30,6 +30,7 @@ export default async function OutstandingPage({
     .from("billings")
     .select("resident_id, amount")
     .eq("period", period);
+  const noBillingRun = (billings ?? []).length === 0;
   const expectedByResident = Object.fromEntries((billings ?? []).map((b) => [b.resident_id, Number(b.amount)]));
 
   const { data: payments } = await supabase
@@ -90,6 +91,13 @@ export default async function OutstandingPage({
           ⬇ Export CSV
         </Link>
       </form>
+
+      {noBillingRun && (
+        <div className="mb-4 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-sm px-3 py-2">
+          ⚠ No bills generated for {period}. Every unit below reads as ₱0 expected — this period has not been
+          billed, it is not paid up. Run the billing run on the Billing screen first.
+        </div>
+      )}
 
       <div className="bg-white border border-gray-200 rounded-xl overflow-x-auto">
         <table className="w-full text-[13px]">

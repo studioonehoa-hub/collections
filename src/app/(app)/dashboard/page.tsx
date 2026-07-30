@@ -53,6 +53,7 @@ export default async function DashboardPage() {
     byMode.set(p.mode, (byMode.get(p.mode) ?? 0) + Number(p.amount));
   }
 
+  const noBillingRun = (billings ?? []).length === 0;
   const expectedByResident = Object.fromEntries((billings ?? []).map((b) => [b.resident_id, Number(b.amount)]));
   const paidByResident = new Map<string, number>();
   for (const p of periodPayments ?? []) {
@@ -109,6 +110,14 @@ export default async function DashboardPage() {
     <section>
       <h2 className="text-[17px] font-semibold text-gray-900">Dashboard</h2>
       <p className="text-gray-500 text-[12.5px] mb-4">{period} · all figures in PHP</p>
+
+      {noBillingRun && (
+        <div className="mb-4 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-sm px-3 py-2">
+          ⚠ No bills generated for {period}. &ldquo;Outstanding&rdquo; and &ldquo;units paid&rdquo; below read as
+          zero because this period hasn&apos;t been billed yet — not because it&apos;s fully paid. Run the billing
+          run on the Billing screen first.
+        </div>
+      )}
 
       <div className="grid gap-3 sm:grid-cols-4 mb-4">
         <div className="bg-white border border-gray-200 rounded-xl p-3.5">
