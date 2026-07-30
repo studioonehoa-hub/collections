@@ -10,14 +10,14 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <div className="min-h-screen flex flex-col bg-neutral-950">
       <header className="relative bg-white text-neutral-800 flex flex-col items-center gap-1 px-5 pb-3">
-        {/* Full-width thin band — 4x its original thickness. */}
-        <div aria-hidden className="absolute inset-x-0 top-0 h-10 bg-gray-900 pointer-events-none" />
+        {/* Full-width thin band. */}
+        <div aria-hidden className="absolute inset-x-0 top-0 h-5 bg-gray-900 pointer-events-none" />
 
-        {/* Notch + logo always sit on their own row (mt-10 clears the band above),
+        {/* Notch + logo always sit on their own row (mt-5 clears the band above),
             centered via mx-auto. The controls sit on a second row below. Two
             separate rows can never overlap at any viewport width — no breakpoint
             math to get wrong. */}
-        <div className="relative w-fit mx-auto mt-10 px-6 pt-1.5 pb-2.5">
+        <div className="relative isolate w-fit mx-auto mt-5 px-6 pt-1.5 pb-2.5">
           <div aria-hidden className="absolute inset-0 -z-10 bg-gray-900 rounded-b-[26px] pointer-events-none" />
           <div className="leading-tight text-center">
             <div className="font-black text-[23px] uppercase tracking-tight text-white">Koolector</div>
