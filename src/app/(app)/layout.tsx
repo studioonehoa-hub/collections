@@ -9,17 +9,17 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="min-h-screen flex flex-col bg-neutral-950">
-      <header className="relative bg-white text-neutral-800 px-5 py-2.5 flex items-center gap-4 flex-wrap">
+      <header className="relative min-h-[60px] bg-white text-neutral-800 px-5 py-2.5 flex items-center gap-4 flex-wrap">
+        {/* Full-width thin band. */}
+        <div aria-hidden className="absolute inset-x-0 top-0 h-2.5 bg-gray-900 pointer-events-none" />
+        {/* Notch — true CSS border-radius (always smooth) instead of a hand-tuned
+            curve, centered with left-1/2/-translate-x-1/2 so it's dead-center at
+            any viewport width rather than a fixed pixel offset from the left. */}
         <div
           aria-hidden
-          className="absolute inset-x-0 top-0 bg-gray-900 pointer-events-none"
-          style={{
-            height: 54,
-            clipPath:
-              "path('M 0,0 L 4000,0 L 4000,10 L 300,10 C 280,10 280,54 260,54 L 60,54 C 40,54 40,10 20,10 L 0,10 Z')",
-          }}
+          className="absolute left-1/2 top-0 -translate-x-1/2 w-64 h-[54px] bg-gray-900 rounded-b-[26px] pointer-events-none"
         />
-        <div className="leading-tight relative z-10 pl-1">
+        <div className="absolute left-1/2 top-2 -translate-x-1/2 leading-tight z-10 text-center">
           <div className="font-black text-[23px] uppercase tracking-tight text-white">Koolector</div>
           <div className="text-[10px] text-neutral-300 tracking-wide -mt-0.5">
             Billing and Collections Mastered
