@@ -8,10 +8,13 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const items = NAV_ITEMS.filter((item) => item.roles.includes(user.role));
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100">
+    <div className="min-h-screen flex flex-col bg-gray-950">
       <header className="bg-gray-900 text-white px-5 py-2.5 flex items-center gap-4 flex-wrap">
-        <div className="font-bold text-[15px]">
-          🏢 Vista Court <span className="text-blue-300">Collections</span>
+        <div className="leading-tight">
+          <div className="font-black text-[18px] uppercase tracking-tight">Koolector</div>
+          <div className="text-[10px] text-gray-400 tracking-wide -mt-0.5">
+            Billing and Collections Mastered
+          </div>
         </div>
         <div className="ml-auto flex items-center gap-3 text-xs text-gray-400">
           <span>
@@ -30,7 +33,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
       <NavBar items={items} />
 
-      <main className="max-w-5xl w-full mx-auto p-5 flex-1">{children}</main>
+      <main className="max-w-5xl w-full mx-auto p-5 flex-1 text-gray-100">{children}</main>
     </div>
   );
 }

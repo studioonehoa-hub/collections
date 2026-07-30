@@ -35,43 +35,43 @@ export function ResidentForm({
   const [state, formAction, pending] = useActionState(action, { error: null });
 
   return (
-    <form action={formAction} className="bg-white border border-gray-200 rounded-xl p-4">
+    <form action={formAction} className="bg-gray-900 border border-gray-800 rounded-xl p-4">
       {defaults?.id && <input type="hidden" name="id" defaultValue={defaults.id} />}
 
       {state.error && (
-        <div className="mb-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm px-3 py-2">
+        <div className="mb-4 rounded-lg bg-red-900/30 border border-red-800 text-red-300 text-sm px-3 py-2">
           {state.error}
         </div>
       )}
 
       <div className="grid gap-4 sm:grid-cols-2 mb-4">
         <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1">Name</label>
+          <label className="block text-xs font-semibold text-gray-300 mb-1">Name</label>
           <input
             name="name"
             required
             defaultValue={defaults?.name}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-700"
+            className="w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-blue-500"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1">Unit no.</label>
+          <label className="block text-xs font-semibold text-gray-300 mb-1">Unit no.</label>
           <input
             name="unit_no"
             required
             defaultValue={defaults?.unit_no}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-700"
+            className="w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-blue-500"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1">Dues group</label>
+          <label className="block text-xs font-semibold text-gray-300 mb-1">Dues group</label>
           <select
             name="dues_group_id"
             required
             defaultValue={defaults?.dues_group_id ?? ""}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 bg-white"
+            className="w-full rounded-lg border border-gray-700 px-3 py-2 text-sm text-gray-100 bg-gray-950"
           >
             <option value="" disabled>
               Select a group…
@@ -86,7 +86,7 @@ export function ResidentForm({
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1">
+          <label className="block text-xs font-semibold text-gray-300 mb-1">
             Dues override (optional)
           </label>
           <input
@@ -96,39 +96,39 @@ export function ResidentForm({
             min="0"
             defaultValue={defaults?.dues_override ?? ""}
             placeholder="Beats the group amount if set"
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-700"
+            className="w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-blue-500"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1">
+          <label className="block text-xs font-semibold text-gray-300 mb-1">
             Billing contact 1
           </label>
           <input
             name="billing_contact_1"
             defaultValue={defaults?.billing_contact_1 ?? ""}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-700"
+            className="w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-blue-500"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1">
+          <label className="block text-xs font-semibold text-gray-300 mb-1">
             Billing contact 2
           </label>
           <input
             name="billing_contact_2"
             defaultValue={defaults?.billing_contact_2 ?? ""}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-700"
+            className="w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-blue-500"
           />
         </div>
 
         {showStatus && (
           <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-1">Status</label>
+            <label className="block text-xs font-semibold text-gray-300 mb-1">Status</label>
             <select
               name="status"
               defaultValue={defaults?.status ?? "active"}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 bg-white"
+              className="w-full rounded-lg border border-gray-700 px-3 py-2 text-sm text-gray-100 bg-gray-950"
             >
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
@@ -140,7 +140,7 @@ export function ResidentForm({
       <button
         type="submit"
         disabled={pending}
-        className="rounded-lg bg-blue-700 text-white text-sm font-semibold px-4 py-2 disabled:opacity-50"
+        className="rounded-lg bg-blue-600 text-white text-sm font-semibold px-4 py-2 disabled:opacity-50"
       >
         {pending ? "Saving…" : submitLabel}
       </button>

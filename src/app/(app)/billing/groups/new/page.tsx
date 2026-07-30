@@ -7,8 +7,8 @@ export default async function NewDuesGroupPage() {
 
   return (
     <section>
-      <h2 className="text-[17px] font-semibold text-gray-900">Add dues group</h2>
-      <p className="text-gray-500 text-[12.5px] mb-4">Recurring monthly amount for members of this group.</p>
+      <h2 className="text-[17px] font-semibold text-gray-100">Add dues group</h2>
+      <p className="text-gray-400 text-[12.5px] mb-4">Recurring monthly amount for members of this group.</p>
       <DuesGroupForm action={createDuesGroup} submitLabel="Add group" />
     </section>
   );

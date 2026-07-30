@@ -22,13 +22,13 @@ export function ResidentsTable({ residents }: { residents: Row[] }) {
         placeholder="Search name or unit…"
         value={q}
         onChange={(e) => setQ(e.target.value)}
-        className="mb-3 w-full max-w-xs rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-700"
+        className="mb-3 w-full max-w-xs rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-blue-500"
       />
 
-      <div className="bg-white border border-gray-200 rounded-xl overflow-x-auto">
+      <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-x-auto">
         <table className="w-full text-[13px]">
           <thead>
-            <tr className="text-left text-[11px] uppercase tracking-wide text-gray-500 border-b border-gray-200">
+            <tr className="text-left text-[11px] uppercase tracking-wide text-gray-500 border-b border-gray-800">
               <th className="px-3 py-2">Unit</th>
               <th className="px-3 py-2">Name</th>
               <th className="px-3 py-2">Billing contact 1</th>
@@ -46,7 +46,7 @@ export function ResidentsTable({ residents }: { residents: Row[] }) {
               const effective = override ?? groupAmount;
 
               return (
-                <tr key={r.id} className="border-b border-gray-100 last:border-0">
+                <tr key={r.id} className="border-b border-gray-800 last:border-0">
                   <td className="px-3 py-2">{r.unit_no}</td>
                   <td className="px-3 py-2">{r.name}</td>
                   <td className="px-3 py-2">{r.billing_contact_1 || "—"}</td>
@@ -54,7 +54,7 @@ export function ResidentsTable({ residents }: { residents: Row[] }) {
                   <td className="px-3 py-2">
                     {r.dues_groups?.name ?? "—"}
                     {override !== null && (
-                      <span className="ml-1.5 inline-block rounded-full bg-amber-50 text-amber-700 text-[11px] px-2 py-0.5">
+                      <span className="ml-1.5 inline-block rounded-full bg-amber-900/40 text-amber-300 text-[11px] px-2 py-0.5">
                         override {formatPhp(override)}
                       </span>
                     )}
@@ -64,8 +64,8 @@ export function ResidentsTable({ residents }: { residents: Row[] }) {
                     <span
                       className={`inline-block rounded-full text-[11px] px-2 py-0.5 ${
                         r.status === "active"
-                          ? "bg-emerald-50 text-emerald-700"
-                          : "bg-red-50 text-red-700"
+                          ? "bg-emerald-900/40 text-emerald-300"
+                          : "bg-red-900/40 text-red-300"
                       }`}
                     >
                       {r.status === "active" ? "Active" : "Inactive"}
@@ -74,7 +74,7 @@ export function ResidentsTable({ residents }: { residents: Row[] }) {
                   <td className="px-3 py-2">
                     <Link
                       href={`/residents/edit/${encodeURIComponent(r.unit_no)}`}
-                      className="rounded-lg border border-gray-300 px-2.5 py-1 text-xs"
+                      className="rounded-lg border border-gray-700 px-2.5 py-1 text-xs"
                     >
                       Edit
                     </Link>

@@ -8,17 +8,17 @@ export function NavBar({ items }: { items: NavItem[] }) {
   const pathname = usePathname();
 
   return (
-    <nav className="bg-white border-b border-gray-200 px-5 flex gap-0.5 overflow-x-auto">
+    <nav className="bg-gray-900 border-b border-gray-800 px-5 py-2 flex gap-1.5 overflow-x-auto">
       {items.map((item) => {
         const active = pathname.startsWith(item.href);
         return (
           <Link
             key={item.href}
             href={item.href}
-            className={`px-3.5 py-3 text-[13px] whitespace-nowrap border-b-2 ${
+            className={`px-3.5 py-1.5 rounded-lg text-[13px] font-bold whitespace-nowrap transition-colors ${
               active
-                ? "text-blue-700 border-blue-700 font-semibold"
-                : "text-gray-500 border-transparent hover:text-gray-800"
+                ? "bg-blue-600 text-white"
+                : "text-gray-300 hover:bg-gray-800 hover:text-white"
             }`}
           >
             {item.label}

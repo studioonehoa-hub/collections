@@ -108,11 +108,11 @@ export default async function DashboardPage() {
 
   return (
     <section>
-      <h2 className="text-[17px] font-semibold text-gray-900">Dashboard</h2>
-      <p className="text-gray-500 text-[12.5px] mb-4">{period} · all figures in PHP</p>
+      <h2 className="text-[17px] font-semibold text-gray-100">Dashboard</h2>
+      <p className="text-gray-400 text-[12.5px] mb-4">{period} · all figures in PHP</p>
 
       {noBillingRun && (
-        <div className="mb-4 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-sm px-3 py-2">
+        <div className="mb-4 rounded-lg bg-amber-900/30 border border-amber-800 text-amber-300 text-sm px-3 py-2">
           ⚠ No bills generated for {period}. &ldquo;Outstanding&rdquo; and &ldquo;units paid&rdquo; below read as
           zero because this period hasn&apos;t been billed yet — not because it&apos;s fully paid. Run the billing
           run on the Billing screen first.
@@ -120,27 +120,27 @@ export default async function DashboardPage() {
       )}
 
       <div className="grid gap-3 sm:grid-cols-4 mb-4">
-        <div className="bg-white border border-gray-200 rounded-xl p-3.5">
-          <div className="text-[11px] uppercase tracking-wide text-gray-500">Collected this month</div>
+        <div className="bg-gray-900 border border-gray-800 rounded-xl p-3.5">
+          <div className="text-[11px] uppercase tracking-wide text-gray-400">Collected this month</div>
           <div className="text-[22px] font-bold mt-1">{formatPhp(collectedThisMonth)}</div>
-          <div className="text-[11.5px] text-gray-500 mt-0.5">
+          <div className="text-[11.5px] text-gray-400 mt-0.5">
             {paidUnitCount} of {billedUnitIds.length} units paid
           </div>
         </div>
-        <div className="bg-white border border-gray-200 rounded-xl p-3.5">
-          <div className="text-[11px] uppercase tracking-wide text-gray-500">Outstanding ({period})</div>
-          <div className="text-[22px] font-bold mt-1 text-red-700">{formatPhp(outstandingThisMonth)}</div>
-          <div className="text-[11.5px] text-gray-500 mt-0.5">{unpaidUnitCount} units unpaid</div>
+        <div className="bg-gray-900 border border-gray-800 rounded-xl p-3.5">
+          <div className="text-[11px] uppercase tracking-wide text-gray-400">Outstanding ({period})</div>
+          <div className="text-[22px] font-bold mt-1 text-red-400">{formatPhp(outstandingThisMonth)}</div>
+          <div className="text-[11.5px] text-gray-400 mt-0.5">{unpaidUnitCount} units unpaid</div>
         </div>
-        <div className="bg-white border border-gray-200 rounded-xl p-3.5">
-          <div className="text-[11px] uppercase tracking-wide text-gray-500">
+        <div className="bg-gray-900 border border-gray-800 rounded-xl p-3.5">
+          <div className="text-[11px] uppercase tracking-wide text-gray-400">
             {levyLine ? `Levy: ${levyLine.name}` : "Levy"}
           </div>
           {levyLine ? (
             <>
               <div className="text-[22px] font-bold mt-1">{formatPhp(levyLine.collected)}</div>
-              <div className="text-[11.5px] text-gray-500 mt-0.5">of {formatPhp(levyLine.target)} target</div>
-              <div className="h-2 bg-gray-200 rounded-full overflow-hidden mt-2">
+              <div className="text-[11.5px] text-gray-400 mt-0.5">of {formatPhp(levyLine.target)} target</div>
+              <div className="h-2 bg-gray-700 rounded-full overflow-hidden mt-2">
                 <div className="h-full bg-emerald-600" style={{ width: `${levyLine.pct}%` }} />
               </div>
             </>
@@ -148,8 +148,8 @@ export default async function DashboardPage() {
             <div className="text-[13px] text-gray-400 mt-1">No active levy</div>
           )}
         </div>
-        <div className="bg-white border border-gray-200 rounded-xl p-3.5">
-          <div className="text-[11px] uppercase tracking-wide text-gray-500">By mode ({period})</div>
+        <div className="bg-gray-900 border border-gray-800 rounded-xl p-3.5">
+          <div className="text-[11px] uppercase tracking-wide text-gray-400">By mode ({period})</div>
           <div className="text-[13px] leading-7 mt-1">
             {byMode.size === 0 && <span className="text-gray-400">No collections yet</span>}
             {[...byMode.entries()].map(([mode, amount]) => (
@@ -161,11 +161,12 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-xl p-4 mb-4">
+      <div className="bg-gray-900 border border-gray-800 rounded-xl p-4 mb-4">
         <h3 className="text-sm font-semibold mb-3">Recent entries</h3>
+        <div className="overflow-x-auto">
         <table className="w-full text-[13px]">
           <thead>
-            <tr className="text-left text-[11px] uppercase tracking-wide text-gray-500 border-b border-gray-200">
+            <tr className="text-left text-[11px] uppercase tracking-wide text-gray-400 border-b border-gray-800">
               <th className="px-3 py-2">Date</th>
               <th className="px-3 py-2">Unit</th>
               <th className="px-3 py-2">Name</th>
@@ -177,14 +178,14 @@ export default async function DashboardPage() {
           </thead>
           <tbody>
             {recentEntries.map((e) => (
-              <tr key={e.id} className="border-b border-gray-100 last:border-0">
+              <tr key={e.id} className="border-b border-gray-800 last:border-0">
                 <td className="px-3 py-2">{formatDate(e.date)}</td>
                 <td className="px-3 py-2">{nameByResident[e.resident_id]?.unit_no ?? "—"}</td>
                 <td className="px-3 py-2">{nameByResident[e.resident_id]?.name ?? "—"}</td>
                 <td className="px-3 py-2">
                   <span
                     className={`inline-block rounded-full text-[11px] px-2 py-0.5 ${
-                      e.type === "Monthly" ? "bg-blue-50 text-blue-700" : "bg-amber-50 text-amber-700"
+                      e.type === "Monthly" ? "bg-blue-900/40 text-blue-300" : "bg-amber-900/40 text-amber-300"
                     }`}
                   >
                     {e.type}
@@ -204,11 +205,12 @@ export default async function DashboardPage() {
             )}
           </tbody>
         </table>
+        </div>
       </div>
 
       <Link
         href={`/dashboard/export?month=${monthStart.slice(0, 7)}`}
-        className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-semibold inline-block"
+        className="rounded-lg border border-gray-700 px-3 py-2 text-sm font-semibold inline-block"
       >
         ⬇ Export month to CSV
       </Link>

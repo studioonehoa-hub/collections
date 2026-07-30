@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Vista Court Collections",
-  description: "Property dues & levy collection tracking",
+  title: "Koolector",
+  description: "Billing and Collections Mastered",
 };
 
 export default function RootLayout({

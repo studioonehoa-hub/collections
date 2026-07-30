@@ -24,8 +24,8 @@ export default async function ResidentsPage() {
 
   return (
     <section>
-      <h2 className="text-[17px] font-semibold text-gray-900">Residents — Full Database 🔒</h2>
-      <p className="text-gray-500 text-[12.5px] mb-4">
+      <h2 className="text-[17px] font-semibold text-gray-100">Residents — Full Database 🔒</h2>
+      <p className="text-gray-400 text-[12.5px] mb-4">
         Super Admin only — the only screen where the resident list can be viewed in aggregate.
         Every other role reaches residents one at a time via Resident Lookup.
       </p>
@@ -33,14 +33,14 @@ export default async function ResidentsPage() {
       <div className="flex justify-end mb-3">
         <Link
           href="/residents/new"
-          className="rounded-lg bg-blue-700 text-white text-sm font-semibold px-4 py-2"
+          className="rounded-lg bg-blue-600 text-white text-sm font-semibold px-4 py-2"
         >
           + Add resident
         </Link>
       </div>
 
       {error ? (
-        <div className="rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm px-3 py-2">
+        <div className="rounded-lg bg-red-900/30 border border-red-800 text-red-300 text-sm px-3 py-2">
           {error.message}
         </div>
       ) : (

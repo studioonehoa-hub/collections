@@ -58,8 +58,8 @@ export default async function BillingPage({
 
   return (
     <section>
-      <h2 className="text-[17px] font-semibold text-gray-900">Billing</h2>
-      <p className="text-gray-500 text-[12.5px] mb-4">
+      <h2 className="text-[17px] font-semibold text-gray-100">Billing</h2>
+      <p className="text-gray-400 text-[12.5px] mb-4">
         {period} billing run · amounts from dues groups (or per-resident override)
       </p>
 
@@ -69,11 +69,12 @@ export default async function BillingPage({
         <Card k="Received / ack'd" v={`${receivedCount} / ${sentCount}`} />
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-xl p-4 mb-4">
+      <div className="bg-gray-900 border border-gray-800 rounded-xl p-4 mb-4">
         <h3 className="text-sm font-semibold mb-3">Dues groups</h3>
+        <div className="overflow-x-auto">
         <table className="w-full text-[13px]">
           <thead>
-            <tr className="text-left text-[11px] uppercase tracking-wide text-gray-500 border-b border-gray-200">
+            <tr className="text-left text-[11px] uppercase tracking-wide text-gray-400 border-b border-gray-800">
               <th className="px-3 py-2">Group</th>
               <th className="px-3 py-2 text-right">Monthly amount</th>
               <th className="px-3 py-2 text-right">Members</th>
@@ -82,14 +83,14 @@ export default async function BillingPage({
           </thead>
           <tbody>
             {(groups ?? []).map((g) => (
-              <tr key={g.id} className="border-b border-gray-100 last:border-0">
+              <tr key={g.id} className="border-b border-gray-800 last:border-0">
                 <td className="px-3 py-2">{g.name}</td>
                 <td className="px-3 py-2 text-right tabular-nums">{formatPhp(Number(g.monthly_amount))}</td>
                 <td className="px-3 py-2 text-right tabular-nums">{g.member_count}</td>
                 <td className="px-3 py-2">
                   <Link
                     href={`/billing/groups/${g.id}/edit`}
-                    className="rounded-lg border border-gray-300 px-2.5 py-1 text-xs"
+                    className="rounded-lg border border-gray-700 px-2.5 py-1 text-xs"
                   >
                     Edit
                   </Link>
@@ -105,17 +106,18 @@ export default async function BillingPage({
             )}
           </tbody>
         </table>
+        </div>
         <div className="mt-3">
           <Link
             href="/billing/groups/new"
-            className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-semibold"
+            className="rounded-lg border border-gray-700 px-3 py-1.5 text-xs font-semibold"
           >
             + Add group
           </Link>
         </div>
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-xl p-4">
+      <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
         <h3 className="text-sm font-semibold mb-3">Billing run — {period}</h3>
 
         <div className="flex gap-2 flex-wrap items-center mb-3">
@@ -124,33 +126,34 @@ export default async function BillingPage({
               name="period"
               defaultValue={period}
               placeholder="e.g. Jul 2026"
-              className="max-w-[140px] rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-700"
+              className="max-w-[140px] rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-blue-500"
             />
             <select
               name="filter"
               defaultValue={filter ?? "all"}
-              className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 bg-white"
+              className="rounded-lg border border-gray-700 px-3 py-2 text-sm text-gray-100 bg-gray-950"
             >
               <option value="all">All</option>
               <option value="not_sent">Not sent</option>
               <option value="not_received">Not received</option>
             </select>
-            <button type="submit" className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-semibold">
+            <button type="submit" className="rounded-lg border border-gray-700 px-3 py-2 text-sm font-semibold">
               View
             </button>
           </form>
 
           <form action={generateBillingRun}>
             <input type="hidden" name="period" value={period} />
-            <button type="submit" className="rounded-lg bg-blue-700 text-white text-sm font-semibold px-4 py-2">
+            <button type="submit" className="rounded-lg bg-blue-600 text-white text-sm font-semibold px-4 py-2">
               Generate bills for {period}
             </button>
           </form>
         </div>
 
+        <div className="overflow-x-auto">
         <table className="w-full text-[13px]">
           <thead>
-            <tr className="text-left text-[11px] uppercase tracking-wide text-gray-500 border-b border-gray-200">
+            <tr className="text-left text-[11px] uppercase tracking-wide text-gray-400 border-b border-gray-800">
               <th className="px-3 py-2">Unit</th>
               <th className="px-3 py-2">Name</th>
               <th className="px-3 py-2 text-right">Amount</th>
@@ -160,7 +163,7 @@ export default async function BillingPage({
           </thead>
           <tbody>
             {billings.map((b) => (
-              <tr key={b.id} className="border-b border-gray-100 last:border-0">
+              <tr key={b.id} className="border-b border-gray-800 last:border-0">
                 <td className="px-3 py-2">{b.unit_no}</td>
                 <td className="px-3 py-2">{b.name}</td>
                 <td className="px-3 py-2 text-right tabular-nums">{formatPhp(Number(b.amount))}</td>
@@ -175,7 +178,7 @@ export default async function BillingPage({
                       <select
                         name="sent_via"
                         required
-                        className="rounded-md border border-gray-300 px-1.5 py-1 text-xs text-gray-900 bg-white"
+                        className="rounded-md border border-gray-700 px-1.5 py-1 text-xs text-gray-100 bg-gray-950"
                       >
                         {SENT_VIA_OPTIONS.map((v) => (
                           <option key={v} value={v}>
@@ -183,7 +186,7 @@ export default async function BillingPage({
                           </option>
                         ))}
                       </select>
-                      <button type="submit" className="rounded-md border border-gray-300 px-2 py-1 text-xs">
+                      <button type="submit" className="rounded-md border border-gray-700 px-2 py-1 text-xs">
                         Mark sent
                       </button>
                     </form>
@@ -191,7 +194,7 @@ export default async function BillingPage({
                 </td>
                 <td className="px-3 py-2">
                   {b.received_status !== "pending" ? (
-                    <span className="inline-block rounded-full bg-emerald-50 text-emerald-700 text-[11px] px-2 py-0.5">
+                    <span className="inline-block rounded-full bg-emerald-900/40 text-emerald-300 text-[11px] px-2 py-0.5">
                       {RECEIVED_STATUS_LABEL[b.received_status]}
                       {b.received_at ? ` ${formatDate(b.received_at)}` : ""}
                     </span>
@@ -201,17 +204,17 @@ export default async function BillingPage({
                       <select
                         name="received_status"
                         required
-                        className="rounded-md border border-gray-300 px-1.5 py-1 text-xs text-gray-900 bg-white"
+                        className="rounded-md border border-gray-700 px-1.5 py-1 text-xs text-gray-100 bg-gray-950"
                       >
                         <option value="received">Received</option>
                         <option value="acknowledged">Acknowledged</option>
                       </select>
-                      <button type="submit" className="rounded-md border border-gray-300 px-2 py-1 text-xs">
+                      <button type="submit" className="rounded-md border border-gray-700 px-2 py-1 text-xs">
                         Mark received
                       </button>
                     </form>
                   ) : (
-                    <span className="inline-block rounded-full bg-red-50 text-red-700 text-[11px] px-2 py-0.5">
+                    <span className="inline-block rounded-full bg-red-900/40 text-red-300 text-[11px] px-2 py-0.5">
                       Pending
                     </span>
                   )}
@@ -227,6 +230,7 @@ export default async function BillingPage({
             )}
           </tbody>
         </table>
+        </div>
       </div>
     </section>
   );
@@ -234,10 +238,10 @@ export default async function BillingPage({
 
 function Card({ k, v, d }: { k: string; v: string; d?: string }) {
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-3.5">
-      <div className="text-[11px] uppercase tracking-wide text-gray-500">{k}</div>
+    <div className="bg-gray-900 border border-gray-800 rounded-xl p-3.5">
+      <div className="text-[11px] uppercase tracking-wide text-gray-400">{k}</div>
       <div className="text-[22px] font-bold mt-1">{v}</div>
-      {d && <div className="text-[11.5px] text-gray-500 mt-0.5">{d}</div>}
+      {d && <div className="text-[11.5px] text-gray-400 mt-0.5">{d}</div>}
     </div>
   );
 }

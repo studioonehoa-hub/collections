@@ -39,8 +39,8 @@ export default async function RecordPaymentPage({
 
   return (
     <section>
-      <h2 className="text-[17px] font-semibold text-gray-900">Record Payment</h2>
-      <p className="text-gray-500 text-[12.5px] mb-4">
+      <h2 className="text-[17px] font-semibold text-gray-100">Record Payment</h2>
+      <p className="text-gray-400 text-[12.5px] mb-4">
         Monthly dues entry · admin &amp; encoder — search for the exact unit or name first.
       </p>
 
@@ -49,32 +49,32 @@ export default async function RecordPaymentPage({
           name="unit"
           defaultValue={query}
           placeholder="Type exact name or unit no…"
-          className="max-w-xs w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-700"
+          className="max-w-xs w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-blue-500"
         />
-        <button type="submit" className="rounded-lg bg-blue-700 text-white text-sm font-semibold px-4 py-2">
+        <button type="submit" className="rounded-lg bg-blue-600 text-white text-sm font-semibold px-4 py-2">
           Search
         </button>
       </form>
 
       {saved === "1" && (
-        <div className="mb-4 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm px-3 py-2">
+        <div className="mb-4 rounded-lg bg-emerald-900/30 border border-emerald-800 text-emerald-300 text-sm px-3 py-2">
           Payment saved.
         </div>
       )}
 
       {query && !resident && (
-        <div className="rounded-lg bg-white border border-gray-200 px-4 py-6 text-center text-gray-400 text-sm">
+        <div className="rounded-lg bg-gray-900 border border-gray-800 px-4 py-6 text-center text-gray-400 text-sm">
           No resident found for &ldquo;{query}&rdquo;.
         </div>
       )}
 
       {resident && (
         <>
-          <div className="bg-white border border-gray-200 rounded-xl p-4 mb-4">
+          <div className="bg-gray-900 border border-gray-800 rounded-xl p-4 mb-4">
             <h3 className="text-sm font-semibold">
               {resident.unit_no} — {resident.name}
             </h3>
-            <p className="text-gray-500 text-[12.5px] mt-1">{groupLabel}</p>
+            <p className="text-gray-400 text-[12.5px] mt-1">{groupLabel}</p>
           </div>
 
           <PaymentForm
@@ -85,7 +85,7 @@ export default async function RecordPaymentPage({
             defaultPeriod={currentPeriod()}
             submitLabel="Save payment"
           />
-          <p className="text-gray-500 text-[12px] mt-2">
+          <p className="text-gray-400 text-[12px] mt-2">
             After saving, this entry appears on the unit&apos;s ledger and factors into the outstanding report
             automatically.
           </p>

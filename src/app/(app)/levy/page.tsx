@@ -71,13 +71,13 @@ export default async function SpecialPaymentPage({
 
   return (
     <section>
-      <h2 className="text-[17px] font-semibold text-gray-900">Special Payment</h2>
+      <h2 className="text-[17px] font-semibold text-gray-100">Special Payment</h2>
       {levy ? (
-        <p className="text-gray-500 text-[12.5px] mb-4">
+        <p className="text-gray-400 text-[12.5px] mb-4">
           Active levy: <b>{levy.name}</b> — {formatPhp(Number(levy.amount_per_unit))}/unit
         </p>
       ) : (
-        <p className="text-gray-500 text-[12.5px] mb-4">No active levy right now.</p>
+        <p className="text-gray-400 text-[12.5px] mb-4">No active levy right now.</p>
       )}
 
       {levy && (
@@ -87,28 +87,28 @@ export default async function SpecialPaymentPage({
               name="unit"
               defaultValue={query}
               placeholder="Type exact name or unit no…"
-              className="max-w-xs w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-700"
+              className="max-w-xs w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-blue-500"
             />
-            <button type="submit" className="rounded-lg bg-blue-700 text-white text-sm font-semibold px-4 py-2">
+            <button type="submit" className="rounded-lg bg-blue-600 text-white text-sm font-semibold px-4 py-2">
               Search
             </button>
           </form>
 
           {saved === "1" && (
-            <div className="mb-4 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm px-3 py-2">
+            <div className="mb-4 rounded-lg bg-emerald-900/30 border border-emerald-800 text-emerald-300 text-sm px-3 py-2">
               Special payment saved.
             </div>
           )}
 
           {query && !resident && (
-            <div className="mb-4 rounded-lg bg-white border border-gray-200 px-4 py-6 text-center text-gray-400 text-sm">
+            <div className="mb-4 rounded-lg bg-gray-900 border border-gray-800 px-4 py-6 text-center text-gray-400 text-sm">
               No resident found for &ldquo;{query}&rdquo;.
             </div>
           )}
 
           {resident && (
             <div className="mb-4">
-              <div className="bg-white border border-gray-200 rounded-xl p-4 mb-4">
+              <div className="bg-gray-900 border border-gray-800 rounded-xl p-4 mb-4">
                 <h3 className="text-sm font-semibold">
                   {resident.unit_no} — {resident.name}
                 </h3>
@@ -124,13 +124,14 @@ export default async function SpecialPaymentPage({
             </div>
           )}
 
-          <div className="bg-white border border-gray-200 rounded-xl p-4">
+          <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
             <h3 className="text-sm font-semibold mb-3">
               Levy progress — {paidCount} of {progress.length} units paid
             </h3>
+            <div className="overflow-x-auto">
             <table className="w-full text-[13px]">
               <thead>
-                <tr className="text-left text-[11px] uppercase tracking-wide text-gray-500 border-b border-gray-200">
+                <tr className="text-left text-[11px] uppercase tracking-wide text-gray-400 border-b border-gray-800">
                   <th className="px-3 py-2">Unit</th>
                   {user.role !== "encoder" && <th className="px-3 py-2">Name</th>}
                   <th className="px-3 py-2 text-right">Paid</th>
@@ -144,12 +145,12 @@ export default async function SpecialPaymentPage({
                   const status = p.paid >= full ? "Paid" : p.paid > 0 ? "Partial" : "Unpaid";
                   const badge =
                     status === "Paid"
-                      ? "bg-emerald-50 text-emerald-700"
+                      ? "bg-emerald-900/40 text-emerald-300"
                       : status === "Partial"
-                        ? "bg-amber-50 text-amber-700"
-                        : "bg-red-50 text-red-700";
+                        ? "bg-amber-900/40 text-amber-300"
+                        : "bg-red-900/40 text-red-300";
                   return (
-                    <tr key={p.unit_no} className="border-b border-gray-100 last:border-0">
+                    <tr key={p.unit_no} className="border-b border-gray-800 last:border-0">
                       <td className="px-3 py-2">{p.unit_no}</td>
                       {user.role !== "encoder" && <td className="px-3 py-2">{p.name}</td>}
                       <td className="px-3 py-2 text-right tabular-nums">
@@ -173,6 +174,7 @@ export default async function SpecialPaymentPage({
                 )}
               </tbody>
             </table>
+            </div>
           </div>
         </>
       )}

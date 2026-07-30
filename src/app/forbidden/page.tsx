@@ -10,10 +10,10 @@ export default async function ForbiddenPage() {
   const homeHref = NAV_ITEMS.find((item) => user.role && item.roles.includes(user.role))?.href;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <div className="w-full max-w-sm bg-white border border-gray-200 rounded-xl p-6 shadow-sm text-center">
-        <h1 className="text-base font-bold text-gray-900 mb-1">403 — Not allowed</h1>
-        <p className="text-sm text-gray-500 mb-6">
+    <div className="min-h-screen flex items-center justify-center bg-gray-950 px-4">
+      <div className="w-full max-w-sm bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-sm text-center">
+        <h1 className="text-base font-bold text-gray-100 mb-1">403 — Not allowed</h1>
+        <p className="text-sm text-gray-400 mb-6">
           {user.role ? ROLE_LABEL[user.role] : "Your role"} doesn&apos;t have access to that
           screen.
         </p>
@@ -21,7 +21,7 @@ export default async function ForbiddenPage() {
           {homeHref && (
             <a
               href={homeHref}
-              className="flex-1 rounded-lg bg-blue-700 text-white text-sm font-semibold py-2"
+              className="flex-1 rounded-lg bg-blue-600 text-white text-sm font-semibold py-2"
             >
               Back
             </a>
@@ -29,7 +29,7 @@ export default async function ForbiddenPage() {
           <form action={signOut} className="flex-1">
             <button
               type="submit"
-              className="w-full rounded-lg bg-white border border-gray-300 text-gray-900 text-sm font-semibold py-2"
+              className="w-full rounded-lg bg-gray-900 border border-gray-700 text-gray-100 text-sm font-semibold py-2"
             >
               Log out
             </button>

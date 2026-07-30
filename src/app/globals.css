@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #030712;
+  --foreground: #f3f4f6;
 }
 
 @theme inline {
@@ -13,12 +13,17 @@
 }
 
 /*
- * This app's UI intentionally has no dark variant — it's a fixed light
- * palette matching collection-system-mockup.html (bg-gray-100 page,
- * bg-white cards/forms). Do not reintroduce a prefers-color-scheme
- * override here: --foreground cascades via body's `color` into every
- * input/select, and flipping it near-white against bg-white form fields
- * makes typed text invisible.
+ * This app's UI is intentionally a fixed dark palette (not OS-driven) —
+ * see the (app) layout and every page/component for the bg-gray-950 /
+ * bg-gray-900 / border-gray-800 convention. The topbar is the one
+ * exception, kept as its own fixed dark bar regardless.
+ *
+ * Do not reintroduce a prefers-color-scheme override here: --foreground
+ * cascades via body's `color` into every input/select. Every input in
+ * this app sets its own explicit text color (text-gray-100 on a dark
+ * field) rather than relying on this value — keep it that way, since a
+ * future light-mode variant would otherwise make typed text invisible
+ * again (see git history for the exact bug this caused once already).
  */
 
 body {

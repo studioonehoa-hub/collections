@@ -31,10 +31,10 @@ export default async function EditResidentPage({
 
   return (
     <section>
-      <h2 className="text-[17px] font-semibold text-gray-900">
+      <h2 className="text-[17px] font-semibold text-gray-100">
         Edit {resident.unit_no} — {resident.name}
       </h2>
-      <p className="text-gray-500 text-[12.5px] mb-4">
+      <p className="text-gray-400 text-[12.5px] mb-4">
         Update dues assignment, contacts, or status.
       </p>
       <ResidentForm

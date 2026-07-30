@@ -113,8 +113,8 @@ export default async function LedgerPage({
 
   return (
     <section>
-      <h2 className="text-[17px] font-semibold text-gray-900">Unit Ledger</h2>
-      <p className="text-gray-500 text-[12.5px] mb-4">
+      <h2 className="text-[17px] font-semibold text-gray-100">Unit Ledger</h2>
+      <p className="text-gray-400 text-[12.5px] mb-4">
         All payments for one unit, regular and special — search by exact name or unit no.
       </p>
 
@@ -123,15 +123,15 @@ export default async function LedgerPage({
           name="unit"
           defaultValue={query}
           placeholder="Type exact name or unit no…"
-          className="max-w-xs w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 outline-none focus:border-blue-700"
+          className="max-w-xs w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-blue-500"
         />
-        <button type="submit" className="rounded-lg bg-blue-700 text-white text-sm font-semibold px-4 py-2">
+        <button type="submit" className="rounded-lg bg-blue-600 text-white text-sm font-semibold px-4 py-2">
           Search
         </button>
       </form>
 
       {query && !resident && (
-        <div className="rounded-lg bg-white border border-gray-200 px-4 py-6 text-center text-gray-400 text-sm">
+        <div className="rounded-lg bg-gray-900 border border-gray-800 px-4 py-6 text-center text-gray-400 text-sm">
           No resident found for &ldquo;{query}&rdquo;.
         </div>
       )}
@@ -143,29 +143,29 @@ export default async function LedgerPage({
           </h3>
 
           <div className="grid gap-3 sm:grid-cols-3 mb-4">
-            <div className="bg-white border border-gray-200 rounded-xl p-3.5">
-              <div className="text-[11px] uppercase tracking-wide text-gray-500">Paid YTD</div>
+            <div className="bg-gray-900 border border-gray-800 rounded-xl p-3.5">
+              <div className="text-[11px] uppercase tracking-wide text-gray-400">Paid YTD</div>
               <div className="text-[22px] font-bold mt-1">{formatPhp(paidYtd)}</div>
             </div>
-            <div className="bg-white border border-gray-200 rounded-xl p-3.5">
-              <div className="text-[11px] uppercase tracking-wide text-gray-500">Arrears</div>
-              <div className={`text-[22px] font-bold mt-1 ${arrears > 0 ? "text-red-700" : ""}`}>
+            <div className="bg-gray-900 border border-gray-800 rounded-xl p-3.5">
+              <div className="text-[11px] uppercase tracking-wide text-gray-400">Arrears</div>
+              <div className={`text-[22px] font-bold mt-1 ${arrears > 0 ? "text-red-400" : ""}`}>
                 {formatPhp(arrears)}
               </div>
               {arrearsPeriods.length > 0 && (
-                <div className="text-[11.5px] text-gray-500 mt-0.5">{arrearsPeriods.join(", ")} unpaid</div>
+                <div className="text-[11.5px] text-gray-400 mt-0.5">{arrearsPeriods.join(", ")} unpaid</div>
               )}
             </div>
-            <div className="bg-white border border-gray-200 rounded-xl p-3.5">
-              <div className="text-[11px] uppercase tracking-wide text-gray-500">Levy contribution</div>
+            <div className="bg-gray-900 border border-gray-800 rounded-xl p-3.5">
+              <div className="text-[11px] uppercase tracking-wide text-gray-400">Levy contribution</div>
               <div className="text-[22px] font-bold mt-1">{levyLabel ?? "—"}</div>
             </div>
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-xl overflow-x-auto">
+          <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-x-auto">
             <table className="w-full text-[13px]">
               <thead>
-                <tr className="text-left text-[11px] uppercase tracking-wide text-gray-500 border-b border-gray-200">
+                <tr className="text-left text-[11px] uppercase tracking-wide text-gray-400 border-b border-gray-800">
                   <th className="px-3 py-2">Date</th>
                   <th className="px-3 py-2">Type</th>
                   <th className="px-3 py-2">Period / Levy</th>
@@ -178,21 +178,21 @@ export default async function LedgerPage({
                 {entries.map((e) => (
                   <tr
                     key={e.id}
-                    className={`border-b border-gray-100 last:border-0 ${e.voided ? "text-gray-400" : ""}`}
+                    className={`border-b border-gray-800 last:border-0 ${e.voided ? "text-gray-400" : ""}`}
                   >
                     <td className={`px-3 py-2 ${e.voided ? "line-through" : ""}`}>{formatDate(e.date)}</td>
                     <td className="px-3 py-2">
                       <span
                         className={`inline-block rounded-full text-[11px] px-2 py-0.5 ${
                           e.type === "Monthly"
-                            ? "bg-blue-50 text-blue-700"
-                            : "bg-amber-50 text-amber-700"
+                            ? "bg-blue-900/40 text-blue-300"
+                            : "bg-amber-900/40 text-amber-300"
                         }`}
                       >
                         {e.type}
                       </span>
                       {e.voided && (
-                        <span className="ml-1.5 inline-block rounded-full bg-red-50 text-red-700 text-[11px] px-2 py-0.5">
+                        <span className="ml-1.5 inline-block rounded-full bg-red-900/40 text-red-300 text-[11px] px-2 py-0.5">
                           Voided
                         </span>
                       )}
