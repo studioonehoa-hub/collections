@@ -87,28 +87,28 @@ export default async function SpecialPaymentPage({
               name="unit"
               defaultValue={query}
               placeholder="Type exact name or unit no…"
-              className="max-w-xs w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-blue-500"
+              className="max-w-xs w-full border border-neutral-600 bg-neutral-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-neutral-400"
             />
-            <button type="submit" className="rounded-lg bg-blue-600 text-white text-sm font-semibold px-4 py-2">
+            <button type="submit" className="bg-neutral-100 text-neutral-900 text-sm font-semibold px-4 py-2">
               Search
             </button>
           </form>
 
           {saved === "1" && (
-            <div className="mb-4 rounded-lg bg-emerald-900/30 border border-emerald-800 text-emerald-300 text-sm px-3 py-2">
+            <div className="mb-4 bg-emerald-900/30 border border-emerald-800 text-emerald-300 text-sm px-3 py-2">
               Special payment saved.
             </div>
           )}
 
           {query && !resident && (
-            <div className="mb-4 rounded-lg bg-gray-900 border border-gray-800 px-4 py-6 text-center text-gray-400 text-sm">
+            <div className="mb-4 bg-neutral-800 border border-neutral-700 px-4 py-6 text-center text-gray-400 text-sm">
               No resident found for &ldquo;{query}&rdquo;.
             </div>
           )}
 
           {resident && (
             <div className="mb-4">
-              <div className="bg-gray-900 border border-gray-800 rounded-xl p-4 mb-4">
+              <div className="bg-neutral-800 border border-neutral-700 p-4 mb-4">
                 <h3 className="text-sm font-semibold">
                   {resident.unit_no} — {resident.name}
                 </h3>
@@ -124,14 +124,14 @@ export default async function SpecialPaymentPage({
             </div>
           )}
 
-          <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
+          <div className="bg-neutral-800 border border-neutral-700 p-4">
             <h3 className="text-sm font-semibold mb-3">
               Levy progress — {paidCount} of {progress.length} units paid
             </h3>
             <div className="overflow-x-auto">
             <table className="w-full text-[13px]">
               <thead>
-                <tr className="text-left text-[11px] uppercase tracking-wide text-gray-400 border-b border-gray-800">
+                <tr className="text-left text-[11px] uppercase tracking-wide text-gray-400 border-b border-neutral-700">
                   <th className="px-3 py-2">Unit</th>
                   {user.role !== "encoder" && <th className="px-3 py-2">Name</th>}
                   <th className="px-3 py-2 text-right">Paid</th>
@@ -150,7 +150,7 @@ export default async function SpecialPaymentPage({
                         ? "bg-amber-900/40 text-amber-300"
                         : "bg-red-900/40 text-red-300";
                   return (
-                    <tr key={p.unit_no} className="border-b border-gray-800 last:border-0">
+                    <tr key={p.unit_no} className="border-b border-neutral-700 last:border-0">
                       <td className="px-3 py-2">{p.unit_no}</td>
                       {user.role !== "encoder" && <td className="px-3 py-2">{p.name}</td>}
                       <td className="px-3 py-2 text-right tabular-nums">
@@ -158,7 +158,7 @@ export default async function SpecialPaymentPage({
                       </td>
                       <td className="px-3 py-2">{p.lastDate ? formatDate(p.lastDate) : "—"}</td>
                       <td className="px-3 py-2">
-                        <span className={`inline-block rounded-full text-[11px] px-2 py-0.5 ${badge}`}>
+                        <span className={`inline-block text-[11px] px-2 py-0.5 ${badge}`}>
                           {status}
                         </span>
                       </td>

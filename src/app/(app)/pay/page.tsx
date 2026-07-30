@@ -49,28 +49,28 @@ export default async function RecordPaymentPage({
           name="unit"
           defaultValue={query}
           placeholder="Type exact name or unit no…"
-          className="max-w-xs w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-blue-500"
+          className="max-w-xs w-full border border-neutral-600 bg-neutral-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-neutral-400"
         />
-        <button type="submit" className="rounded-lg bg-blue-600 text-white text-sm font-semibold px-4 py-2">
+        <button type="submit" className="bg-neutral-100 text-neutral-900 text-sm font-semibold px-4 py-2">
           Search
         </button>
       </form>
 
       {saved === "1" && (
-        <div className="mb-4 rounded-lg bg-emerald-900/30 border border-emerald-800 text-emerald-300 text-sm px-3 py-2">
+        <div className="mb-4 bg-emerald-900/30 border border-emerald-800 text-emerald-300 text-sm px-3 py-2">
           Payment saved.
         </div>
       )}
 
       {query && !resident && (
-        <div className="rounded-lg bg-gray-900 border border-gray-800 px-4 py-6 text-center text-gray-400 text-sm">
+        <div className="bg-neutral-800 border border-neutral-700 px-4 py-6 text-center text-gray-400 text-sm">
           No resident found for &ldquo;{query}&rdquo;.
         </div>
       )}
 
       {resident && (
         <>
-          <div className="bg-gray-900 border border-gray-800 rounded-xl p-4 mb-4">
+          <div className="bg-neutral-800 border border-neutral-700 p-4 mb-4">
             <h3 className="text-sm font-semibold">
               {resident.unit_no} — {resident.name}
             </h3>

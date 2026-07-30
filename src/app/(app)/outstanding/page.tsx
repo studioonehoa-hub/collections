@@ -71,38 +71,38 @@ export default async function OutstandingPage({
           name="period"
           defaultValue={period}
           placeholder="e.g. Jul 2026"
-          className="max-w-[160px] rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-blue-500"
+          className="max-w-[160px] border border-neutral-600 bg-neutral-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-neutral-400"
         />
         <select
           name="filter"
           defaultValue={filter ?? "all"}
-          className="max-w-[180px] rounded-lg border border-gray-700 px-3 py-2 text-sm text-gray-100 bg-gray-950"
+          className="max-w-[180px] border border-neutral-600 px-3 py-2 text-sm text-gray-100 bg-neutral-950"
         >
           <option value="all">All units</option>
           <option value="unpaid">Unpaid only</option>
         </select>
-        <button type="submit" className="rounded-lg border border-gray-700 px-3 py-2 text-sm font-semibold">
+        <button type="submit" className="border border-neutral-600 px-3 py-2 text-sm font-semibold">
           View
         </button>
         <Link
           href={`/outstanding/export?period=${encodeURIComponent(period)}&filter=${filter ?? "all"}`}
-          className="rounded-lg border border-gray-700 px-3 py-2 text-sm font-semibold ml-auto"
+          className="border border-neutral-600 px-3 py-2 text-sm font-semibold ml-auto"
         >
           ⬇ Export CSV
         </Link>
       </form>
 
       {noBillingRun && (
-        <div className="mb-4 rounded-lg bg-amber-900/30 border border-amber-800 text-amber-300 text-sm px-3 py-2">
+        <div className="mb-4 bg-amber-900/30 border border-amber-800 text-amber-300 text-sm px-3 py-2">
           ⚠ No bills generated for {period}. Every unit below reads as ₱0 expected — this period has not been
           billed, it is not paid up. Run the billing run on the Billing screen first.
         </div>
       )}
 
-      <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-x-auto">
+      <div className="bg-neutral-800 border border-neutral-700 overflow-x-auto">
         <table className="w-full text-[13px]">
           <thead>
-            <tr className="text-left text-[11px] uppercase tracking-wide text-gray-400 border-b border-gray-800">
+            <tr className="text-left text-[11px] uppercase tracking-wide text-gray-400 border-b border-neutral-700">
               <th className="px-3 py-2">Unit</th>
               <th className="px-3 py-2">Name</th>
               <th className="px-3 py-2 text-right">Expected</th>
@@ -122,7 +122,7 @@ export default async function OutstandingPage({
                     ? "bg-amber-900/40 text-amber-300"
                     : "bg-red-900/40 text-red-300";
               return (
-                <tr key={r.unit_no} className="border-b border-gray-800 last:border-0">
+                <tr key={r.unit_no} className="border-b border-neutral-700 last:border-0">
                   <td className="px-3 py-2">{r.unit_no}</td>
                   <td className="px-3 py-2">{r.name}</td>
                   <td className="px-3 py-2 text-right tabular-nums">{formatPhp(r.expected)}</td>
@@ -131,7 +131,7 @@ export default async function OutstandingPage({
                     {formatPhp(balance)}
                   </td>
                   <td className="px-3 py-2">
-                    <span className={`inline-block rounded-full text-[11px] px-2 py-0.5 ${badge}`}>{status}</span>
+                    <span className={`inline-block text-[11px] px-2 py-0.5 ${badge}`}>{status}</span>
                   </td>
                 </tr>
               );

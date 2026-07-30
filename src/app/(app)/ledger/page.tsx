@@ -123,15 +123,15 @@ export default async function LedgerPage({
           name="unit"
           defaultValue={query}
           placeholder="Type exact name or unit no…"
-          className="max-w-xs w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-blue-500"
+          className="max-w-xs w-full border border-neutral-600 bg-neutral-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-neutral-400"
         />
-        <button type="submit" className="rounded-lg bg-blue-600 text-white text-sm font-semibold px-4 py-2">
+        <button type="submit" className="bg-neutral-100 text-neutral-900 text-sm font-semibold px-4 py-2">
           Search
         </button>
       </form>
 
       {query && !resident && (
-        <div className="rounded-lg bg-gray-900 border border-gray-800 px-4 py-6 text-center text-gray-400 text-sm">
+        <div className="bg-neutral-800 border border-neutral-700 px-4 py-6 text-center text-gray-400 text-sm">
           No resident found for &ldquo;{query}&rdquo;.
         </div>
       )}
@@ -143,11 +143,11 @@ export default async function LedgerPage({
           </h3>
 
           <div className="grid gap-3 sm:grid-cols-3 mb-4">
-            <div className="bg-gray-900 border border-gray-800 rounded-xl p-3.5">
+            <div className="bg-neutral-800 border border-neutral-700 p-3.5">
               <div className="text-[11px] uppercase tracking-wide text-gray-400">Paid YTD</div>
               <div className="text-[22px] font-bold mt-1">{formatPhp(paidYtd)}</div>
             </div>
-            <div className="bg-gray-900 border border-gray-800 rounded-xl p-3.5">
+            <div className="bg-neutral-800 border border-neutral-700 p-3.5">
               <div className="text-[11px] uppercase tracking-wide text-gray-400">Arrears</div>
               <div className={`text-[22px] font-bold mt-1 ${arrears > 0 ? "text-red-400" : ""}`}>
                 {formatPhp(arrears)}
@@ -156,16 +156,16 @@ export default async function LedgerPage({
                 <div className="text-[11.5px] text-gray-400 mt-0.5">{arrearsPeriods.join(", ")} unpaid</div>
               )}
             </div>
-            <div className="bg-gray-900 border border-gray-800 rounded-xl p-3.5">
+            <div className="bg-neutral-800 border border-neutral-700 p-3.5">
               <div className="text-[11px] uppercase tracking-wide text-gray-400">Levy contribution</div>
               <div className="text-[22px] font-bold mt-1">{levyLabel ?? "—"}</div>
             </div>
           </div>
 
-          <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-x-auto">
+          <div className="bg-neutral-800 border border-neutral-700 overflow-x-auto">
             <table className="w-full text-[13px]">
               <thead>
-                <tr className="text-left text-[11px] uppercase tracking-wide text-gray-400 border-b border-gray-800">
+                <tr className="text-left text-[11px] uppercase tracking-wide text-gray-400 border-b border-neutral-700">
                   <th className="px-3 py-2">Date</th>
                   <th className="px-3 py-2">Type</th>
                   <th className="px-3 py-2">Period / Levy</th>
@@ -178,21 +178,21 @@ export default async function LedgerPage({
                 {entries.map((e) => (
                   <tr
                     key={e.id}
-                    className={`border-b border-gray-800 last:border-0 ${e.voided ? "text-gray-400" : ""}`}
+                    className={`border-b border-neutral-700 last:border-0 ${e.voided ? "text-gray-400" : ""}`}
                   >
                     <td className={`px-3 py-2 ${e.voided ? "line-through" : ""}`}>{formatDate(e.date)}</td>
                     <td className="px-3 py-2">
                       <span
-                        className={`inline-block rounded-full text-[11px] px-2 py-0.5 ${
+                        className={`inline-block text-[11px] px-2 py-0.5 ${
                           e.type === "Monthly"
-                            ? "bg-blue-900/40 text-blue-300"
+                            ? "bg-neutral-700 text-neutral-200"
                             : "bg-amber-900/40 text-amber-300"
                         }`}
                       >
                         {e.type}
                       </span>
                       {e.voided && (
-                        <span className="ml-1.5 inline-block rounded-full bg-red-900/40 text-red-300 text-[11px] px-2 py-0.5">
+                        <span className="ml-1.5 inline-block bg-red-900/40 text-red-300 text-[11px] px-2 py-0.5">
                           Voided
                         </span>
                       )}

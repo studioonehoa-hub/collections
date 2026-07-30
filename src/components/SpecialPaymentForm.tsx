@@ -31,13 +31,13 @@ export function SpecialPaymentForm({
   const today = new Date().toISOString().slice(0, 10);
 
   return (
-    <form action={formAction} className="bg-gray-900 border border-gray-800 rounded-xl p-4">
+    <form action={formAction} className="bg-neutral-800 border border-neutral-700 p-4">
       <input type="hidden" name="resident_id" value={residentId} />
       <input type="hidden" name="unit_no" value={unitNo} />
       <input type="hidden" name="levy_id" value={levyId} />
 
       {state.error && (
-        <div className="mb-4 rounded-lg bg-red-900/30 border border-red-800 text-red-300 text-sm px-3 py-2">
+        <div className="mb-4 bg-red-900/30 border border-red-800 text-red-300 text-sm px-3 py-2">
           {state.error}
         </div>
       )}
@@ -50,7 +50,7 @@ export function SpecialPaymentForm({
             type="date"
             required
             defaultValue={today}
-            className="w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-blue-500"
+            className="w-full border border-neutral-600 bg-neutral-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-neutral-400"
           />
         </div>
         <div>
@@ -62,7 +62,7 @@ export function SpecialPaymentForm({
             min="0"
             required
             defaultValue={defaultAmount}
-            className="w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-blue-500"
+            className="w-full border border-neutral-600 bg-neutral-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-neutral-400"
           />
         </div>
         <div>
@@ -71,7 +71,7 @@ export function SpecialPaymentForm({
             name="mode"
             required
             defaultValue="cash"
-            className="w-full rounded-lg border border-gray-700 px-3 py-2 text-sm text-gray-100 bg-gray-950"
+            className="w-full border border-neutral-600 px-3 py-2 text-sm text-gray-100 bg-neutral-950"
           >
             {MODES.map((m) => (
               <option key={m} value={m}>
@@ -86,7 +86,7 @@ export function SpecialPaymentForm({
             name="received_by"
             required
             defaultValue="admin_office"
-            className="w-full rounded-lg border border-gray-700 px-3 py-2 text-sm text-gray-100 bg-gray-950"
+            className="w-full border border-neutral-600 px-3 py-2 text-sm text-gray-100 bg-neutral-950"
           >
             <option value="admin_office">Admin office</option>
             <option value="bank">Bank</option>
@@ -97,7 +97,7 @@ export function SpecialPaymentForm({
       <button
         type="submit"
         disabled={pending}
-        className="rounded-lg bg-blue-600 text-white text-sm font-semibold px-4 py-2 disabled:opacity-50"
+        className="bg-neutral-100 text-neutral-900 text-sm font-semibold px-4 py-2 disabled:opacity-50"
       >
         {pending ? "Saving…" : submitLabel}
       </button>

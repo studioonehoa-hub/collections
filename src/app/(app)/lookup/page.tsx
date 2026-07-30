@@ -52,18 +52,18 @@ export default async function LookupPage({
           name="q"
           defaultValue={query}
           placeholder="Type exact name or unit no…"
-          className="max-w-xs w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-blue-500"
+          className="max-w-xs w-full border border-neutral-600 bg-neutral-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-neutral-400"
         />
         <button
           type="submit"
-          className="rounded-lg bg-blue-600 text-white text-sm font-semibold px-4 py-2"
+          className="bg-neutral-100 text-neutral-900 text-sm font-semibold px-4 py-2"
         >
           Search
         </button>
         {canEdit && (
           <Link
             href="/residents/new"
-            className="rounded-lg border border-gray-700 text-gray-100 text-sm font-semibold px-4 py-2 ml-auto"
+            className="border border-neutral-600 text-gray-100 text-sm font-semibold px-4 py-2 ml-auto"
           >
             + Add resident
           </Link>
@@ -71,13 +71,13 @@ export default async function LookupPage({
       </form>
 
       {query && !resident && (
-        <div className="rounded-lg bg-gray-900 border border-gray-800 px-4 py-6 text-center text-gray-400 text-sm">
+        <div className="bg-neutral-800 border border-neutral-700 px-4 py-6 text-center text-gray-400 text-sm">
           No resident found for &ldquo;{query}&rdquo;.
         </div>
       )}
 
       {resident && (
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
+        <div className="bg-neutral-800 border border-neutral-700 p-4">
           <h3 className="text-sm font-semibold mb-3">
             {resident.unit_no} — {resident.name}
           </h3>
@@ -99,7 +99,7 @@ export default async function LookupPage({
                 <td className="text-gray-400 py-1 pr-4 align-top">Status</td>
                 <td className="py-1">
                   <span
-                    className={`inline-block rounded-full text-[11px] px-2 py-0.5 ${
+                    className={`inline-block text-[11px] px-2 py-0.5 ${
                       resident.status === "active"
                         ? "bg-emerald-900/40 text-emerald-300"
                         : "bg-red-900/40 text-red-300"
@@ -115,20 +115,20 @@ export default async function LookupPage({
           <div className="mt-3 flex gap-2 flex-wrap">
             <Link
               href={`/ledger?unit=${encodeURIComponent(resident.unit_no)}`}
-              className="rounded-lg border border-gray-700 text-xs font-semibold px-3 py-1.5"
+              className="border border-neutral-600 text-xs font-semibold px-3 py-1.5"
             >
               View ledger
             </Link>
             <Link
               href={`/pay?unit=${encodeURIComponent(resident.unit_no)}`}
-              className="rounded-lg border border-gray-700 text-xs font-semibold px-3 py-1.5"
+              className="border border-neutral-600 text-xs font-semibold px-3 py-1.5"
             >
               Record payment
             </Link>
             {canEdit && (
               <Link
                 href={`/residents/edit/${encodeURIComponent(resident.unit_no)}`}
-                className="rounded-lg border border-gray-700 text-xs font-semibold px-3 py-1.5"
+                className="border border-neutral-600 text-xs font-semibold px-3 py-1.5"
               >
                 Edit
               </Link>

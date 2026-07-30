@@ -8,8 +8,8 @@ export default async function PendingPage() {
   if (user.role) redirect("/dashboard");
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-950 px-4">
-      <div className="w-full max-w-sm bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-sm text-center">
+    <div className="min-h-screen flex items-center justify-center bg-neutral-950 px-4">
+      <div className="w-full max-w-sm bg-neutral-800 border border-neutral-700 p-6 shadow-sm text-center">
         <h1 className="text-base font-bold text-gray-100 mb-1">Account pending</h1>
         <p className="text-sm text-gray-400 mb-6">
           Signed in as {user.email}. Your account doesn&apos;t have a role assigned yet — ask
@@ -18,7 +18,7 @@ export default async function PendingPage() {
         <form action={signOut}>
           <button
             type="submit"
-            className="w-full rounded-lg bg-gray-900 border border-gray-700 text-gray-100 text-sm font-semibold py-2"
+            className="w-full bg-gray-900 border border-neutral-600 text-gray-100 text-sm font-semibold py-2"
           >
             Log out
           </button>

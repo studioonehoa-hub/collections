@@ -112,7 +112,7 @@ export default async function DashboardPage() {
       <p className="text-gray-400 text-[12.5px] mb-4">{period} · all figures in PHP</p>
 
       {noBillingRun && (
-        <div className="mb-4 rounded-lg bg-amber-900/30 border border-amber-800 text-amber-300 text-sm px-3 py-2">
+        <div className="mb-4 bg-amber-900/30 border border-amber-800 text-amber-300 text-sm px-3 py-2">
           ⚠ No bills generated for {period}. &ldquo;Outstanding&rdquo; and &ldquo;units paid&rdquo; below read as
           zero because this period hasn&apos;t been billed yet — not because it&apos;s fully paid. Run the billing
           run on the Billing screen first.
@@ -120,19 +120,19 @@ export default async function DashboardPage() {
       )}
 
       <div className="grid gap-3 sm:grid-cols-4 mb-4">
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-3.5">
+        <div className="relative overflow-hidden bg-gradient-to-br from-neutral-700/70 via-neutral-800/80 to-neutral-900/90 backdrop-blur-md border border-neutral-600/50 p-3.5 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]">
           <div className="text-[11px] uppercase tracking-wide text-gray-400">Collected this month</div>
           <div className="text-[22px] font-bold mt-1">{formatPhp(collectedThisMonth)}</div>
           <div className="text-[11.5px] text-gray-400 mt-0.5">
             {paidUnitCount} of {billedUnitIds.length} units paid
           </div>
         </div>
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-3.5">
+        <div className="relative overflow-hidden bg-gradient-to-br from-neutral-700/70 via-neutral-800/80 to-neutral-900/90 backdrop-blur-md border border-neutral-600/50 p-3.5 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]">
           <div className="text-[11px] uppercase tracking-wide text-gray-400">Outstanding ({period})</div>
           <div className="text-[22px] font-bold mt-1 text-red-400">{formatPhp(outstandingThisMonth)}</div>
           <div className="text-[11.5px] text-gray-400 mt-0.5">{unpaidUnitCount} units unpaid</div>
         </div>
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-3.5">
+        <div className="relative overflow-hidden bg-gradient-to-br from-neutral-700/70 via-neutral-800/80 to-neutral-900/90 backdrop-blur-md border border-neutral-600/50 p-3.5 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]">
           <div className="text-[11px] uppercase tracking-wide text-gray-400">
             {levyLine ? `Levy: ${levyLine.name}` : "Levy"}
           </div>
@@ -140,7 +140,7 @@ export default async function DashboardPage() {
             <>
               <div className="text-[22px] font-bold mt-1">{formatPhp(levyLine.collected)}</div>
               <div className="text-[11.5px] text-gray-400 mt-0.5">of {formatPhp(levyLine.target)} target</div>
-              <div className="h-2 bg-gray-700 rounded-full overflow-hidden mt-2">
+              <div className="h-2 bg-neutral-700 overflow-hidden mt-2">
                 <div className="h-full bg-emerald-600" style={{ width: `${levyLine.pct}%` }} />
               </div>
             </>
@@ -148,7 +148,7 @@ export default async function DashboardPage() {
             <div className="text-[13px] text-gray-400 mt-1">No active levy</div>
           )}
         </div>
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-3.5">
+        <div className="relative overflow-hidden bg-gradient-to-br from-neutral-700/70 via-neutral-800/80 to-neutral-900/90 backdrop-blur-md border border-neutral-600/50 p-3.5 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]">
           <div className="text-[11px] uppercase tracking-wide text-gray-400">By mode ({period})</div>
           <div className="text-[13px] leading-7 mt-1">
             {byMode.size === 0 && <span className="text-gray-400">No collections yet</span>}
@@ -161,12 +161,12 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      <div className="bg-gray-900 border border-gray-800 rounded-xl p-4 mb-4">
+      <div className="bg-neutral-800 border border-neutral-700 p-4 mb-4">
         <h3 className="text-sm font-semibold mb-3">Recent entries</h3>
         <div className="overflow-x-auto">
         <table className="w-full text-[13px]">
           <thead>
-            <tr className="text-left text-[11px] uppercase tracking-wide text-gray-400 border-b border-gray-800">
+            <tr className="text-left text-[11px] uppercase tracking-wide text-gray-400 border-b border-neutral-700">
               <th className="px-3 py-2">Date</th>
               <th className="px-3 py-2">Unit</th>
               <th className="px-3 py-2">Name</th>
@@ -178,14 +178,14 @@ export default async function DashboardPage() {
           </thead>
           <tbody>
             {recentEntries.map((e) => (
-              <tr key={e.id} className="border-b border-gray-800 last:border-0">
+              <tr key={e.id} className="border-b border-neutral-700 last:border-0">
                 <td className="px-3 py-2">{formatDate(e.date)}</td>
                 <td className="px-3 py-2">{nameByResident[e.resident_id]?.unit_no ?? "—"}</td>
                 <td className="px-3 py-2">{nameByResident[e.resident_id]?.name ?? "—"}</td>
                 <td className="px-3 py-2">
                   <span
-                    className={`inline-block rounded-full text-[11px] px-2 py-0.5 ${
-                      e.type === "Monthly" ? "bg-blue-900/40 text-blue-300" : "bg-amber-900/40 text-amber-300"
+                    className={`inline-block text-[11px] px-2 py-0.5 ${
+                      e.type === "Monthly" ? "bg-neutral-700 text-neutral-200" : "bg-amber-900/40 text-amber-300"
                     }`}
                   >
                     {e.type}
@@ -210,7 +210,7 @@ export default async function DashboardPage() {
 
       <Link
         href={`/dashboard/export?month=${monthStart.slice(0, 7)}`}
-        className="rounded-lg border border-gray-700 px-3 py-2 text-sm font-semibold inline-block"
+        className="border border-neutral-600 px-3 py-2 text-sm font-semibold inline-block"
       >
         ⬇ Export month to CSV
       </Link>

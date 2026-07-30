@@ -31,12 +31,12 @@ export function PaymentForm({
   const today = new Date().toISOString().slice(0, 10);
 
   return (
-    <form action={formAction} className="bg-gray-900 border border-gray-800 rounded-xl p-4">
+    <form action={formAction} className="bg-neutral-800 border border-neutral-700 p-4">
       <input type="hidden" name="resident_id" value={residentId} />
       <input type="hidden" name="unit_no" value={unitNo} />
 
       {state.error && (
-        <div className="mb-4 rounded-lg bg-red-900/30 border border-red-800 text-red-300 text-sm px-3 py-2">
+        <div className="mb-4 bg-red-900/30 border border-red-800 text-red-300 text-sm px-3 py-2">
           {state.error}
         </div>
       )}
@@ -49,7 +49,7 @@ export function PaymentForm({
             type="date"
             required
             defaultValue={today}
-            className="w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-blue-500"
+            className="w-full border border-neutral-600 bg-neutral-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-neutral-400"
           />
         </div>
         <div>
@@ -61,7 +61,7 @@ export function PaymentForm({
             min="0"
             required
             defaultValue={defaultAmount}
-            className="w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-blue-500"
+            className="w-full border border-neutral-600 bg-neutral-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-neutral-400"
           />
         </div>
         <div>
@@ -70,7 +70,7 @@ export function PaymentForm({
             name="mode"
             required
             defaultValue="bank_transfer"
-            className="w-full rounded-lg border border-gray-700 px-3 py-2 text-sm text-gray-100 bg-gray-950"
+            className="w-full border border-neutral-600 px-3 py-2 text-sm text-gray-100 bg-neutral-950"
           >
             {MODES.map((m) => (
               <option key={m} value={m}>
@@ -85,7 +85,7 @@ export function PaymentForm({
             name="received_by"
             required
             defaultValue="bank"
-            className="w-full rounded-lg border border-gray-700 px-3 py-2 text-sm text-gray-100 bg-gray-950"
+            className="w-full border border-neutral-600 px-3 py-2 text-sm text-gray-100 bg-neutral-950"
           >
             <option value="bank">Bank</option>
             <option value="admin_office">Admin office</option>
@@ -97,7 +97,7 @@ export function PaymentForm({
             name="period"
             defaultValue={defaultPeriod}
             placeholder="e.g. Jul 2026"
-            className="w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-blue-500"
+            className="w-full border border-neutral-600 bg-neutral-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-neutral-400"
           />
         </div>
         <div>
@@ -105,7 +105,7 @@ export function PaymentForm({
           <input
             name="notes"
             placeholder="OR #, remarks…"
-            className="w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-blue-500"
+            className="w-full border border-neutral-600 bg-neutral-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-neutral-400"
           />
         </div>
       </div>
@@ -113,7 +113,7 @@ export function PaymentForm({
       <button
         type="submit"
         disabled={pending}
-        className="rounded-lg bg-blue-600 text-white text-sm font-semibold px-4 py-2 disabled:opacity-50"
+        className="bg-neutral-100 text-neutral-900 text-sm font-semibold px-4 py-2 disabled:opacity-50"
       >
         {pending ? "Saving…" : submitLabel}
       </button>

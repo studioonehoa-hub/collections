@@ -16,11 +16,11 @@ export function DuesGroupForm({
   const [state, formAction, pending] = useActionState(action, { error: null });
 
   return (
-    <form action={formAction} className="bg-gray-900 border border-gray-800 rounded-xl p-4">
+    <form action={formAction} className="bg-neutral-800 border border-neutral-700 p-4">
       {defaults?.id && <input type="hidden" name="id" defaultValue={defaults.id} />}
 
       {state.error && (
-        <div className="mb-4 rounded-lg bg-red-900/30 border border-red-800 text-red-300 text-sm px-3 py-2">
+        <div className="mb-4 bg-red-900/30 border border-red-800 text-red-300 text-sm px-3 py-2">
           {state.error}
         </div>
       )}
@@ -32,7 +32,7 @@ export function DuesGroupForm({
             name="name"
             required
             defaultValue={defaults?.name}
-            className="w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-blue-500"
+            className="w-full border border-neutral-600 bg-neutral-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-neutral-400"
           />
         </div>
         <div>
@@ -44,7 +44,7 @@ export function DuesGroupForm({
             min="0"
             required
             defaultValue={defaults?.monthly_amount}
-            className="w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-blue-500"
+            className="w-full border border-neutral-600 bg-neutral-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-neutral-400"
           />
         </div>
       </div>
@@ -52,7 +52,7 @@ export function DuesGroupForm({
       <button
         type="submit"
         disabled={pending}
-        className="rounded-lg bg-blue-600 text-white text-sm font-semibold px-4 py-2 disabled:opacity-50"
+        className="bg-neutral-100 text-neutral-900 text-sm font-semibold px-4 py-2 disabled:opacity-50"
       >
         {pending ? "Saving…" : submitLabel}
       </button>

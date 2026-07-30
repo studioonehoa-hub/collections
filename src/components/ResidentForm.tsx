@@ -35,11 +35,11 @@ export function ResidentForm({
   const [state, formAction, pending] = useActionState(action, { error: null });
 
   return (
-    <form action={formAction} className="bg-gray-900 border border-gray-800 rounded-xl p-4">
+    <form action={formAction} className="bg-neutral-800 border border-neutral-700 p-4">
       {defaults?.id && <input type="hidden" name="id" defaultValue={defaults.id} />}
 
       {state.error && (
-        <div className="mb-4 rounded-lg bg-red-900/30 border border-red-800 text-red-300 text-sm px-3 py-2">
+        <div className="mb-4 bg-red-900/30 border border-red-800 text-red-300 text-sm px-3 py-2">
           {state.error}
         </div>
       )}
@@ -51,7 +51,7 @@ export function ResidentForm({
             name="name"
             required
             defaultValue={defaults?.name}
-            className="w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-blue-500"
+            className="w-full border border-neutral-600 bg-neutral-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-neutral-400"
           />
         </div>
 
@@ -61,7 +61,7 @@ export function ResidentForm({
             name="unit_no"
             required
             defaultValue={defaults?.unit_no}
-            className="w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-blue-500"
+            className="w-full border border-neutral-600 bg-neutral-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-neutral-400"
           />
         </div>
 
@@ -71,7 +71,7 @@ export function ResidentForm({
             name="dues_group_id"
             required
             defaultValue={defaults?.dues_group_id ?? ""}
-            className="w-full rounded-lg border border-gray-700 px-3 py-2 text-sm text-gray-100 bg-gray-950"
+            className="w-full border border-neutral-600 px-3 py-2 text-sm text-gray-100 bg-neutral-950"
           >
             <option value="" disabled>
               Select a group…
@@ -96,7 +96,7 @@ export function ResidentForm({
             min="0"
             defaultValue={defaults?.dues_override ?? ""}
             placeholder="Beats the group amount if set"
-            className="w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-blue-500"
+            className="w-full border border-neutral-600 bg-neutral-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-neutral-400"
           />
         </div>
 
@@ -107,7 +107,7 @@ export function ResidentForm({
           <input
             name="billing_contact_1"
             defaultValue={defaults?.billing_contact_1 ?? ""}
-            className="w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-blue-500"
+            className="w-full border border-neutral-600 bg-neutral-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-neutral-400"
           />
         </div>
 
@@ -118,7 +118,7 @@ export function ResidentForm({
           <input
             name="billing_contact_2"
             defaultValue={defaults?.billing_contact_2 ?? ""}
-            className="w-full rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-blue-500"
+            className="w-full border border-neutral-600 bg-neutral-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-neutral-400"
           />
         </div>
 
@@ -128,7 +128,7 @@ export function ResidentForm({
             <select
               name="status"
               defaultValue={defaults?.status ?? "active"}
-              className="w-full rounded-lg border border-gray-700 px-3 py-2 text-sm text-gray-100 bg-gray-950"
+              className="w-full border border-neutral-600 px-3 py-2 text-sm text-gray-100 bg-neutral-950"
             >
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
@@ -140,7 +140,7 @@ export function ResidentForm({
       <button
         type="submit"
         disabled={pending}
-        className="rounded-lg bg-blue-600 text-white text-sm font-semibold px-4 py-2 disabled:opacity-50"
+        className="bg-neutral-100 text-neutral-900 text-sm font-semibold px-4 py-2 disabled:opacity-50"
       >
         {pending ? "Saving…" : submitLabel}
       </button>

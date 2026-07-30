@@ -33,14 +33,14 @@ export default async function ResidentsPage() {
       <div className="flex justify-end mb-3">
         <Link
           href="/residents/new"
-          className="rounded-lg bg-blue-600 text-white text-sm font-semibold px-4 py-2"
+          className="bg-neutral-100 text-neutral-900 text-sm font-semibold px-4 py-2"
         >
           + Add resident
         </Link>
       </div>
 
       {error ? (
-        <div className="rounded-lg bg-red-900/30 border border-red-800 text-red-300 text-sm px-3 py-2">
+        <div className="bg-red-900/30 border border-red-800 text-red-300 text-sm px-3 py-2">
           {error.message}
         </div>
       ) : (

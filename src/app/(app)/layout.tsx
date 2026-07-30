@@ -8,22 +8,22 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const items = NAV_ITEMS.filter((item) => item.roles.includes(user.role));
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-950">
-      <header className="bg-gray-900 text-white px-5 py-2.5 flex items-center gap-4 flex-wrap">
+    <div className="min-h-screen flex flex-col bg-neutral-950">
+      <header className="bg-white text-neutral-800 px-5 py-2.5 flex items-center gap-4 flex-wrap">
         <div className="leading-tight">
-          <div className="font-black text-[18px] uppercase tracking-tight">Koolector</div>
-          <div className="text-[10px] text-gray-400 tracking-wide -mt-0.5">
+          <div className="font-black text-[23px] uppercase tracking-tight text-neutral-900">Koolector</div>
+          <div className="text-[10px] text-neutral-500 tracking-wide -mt-0.5">
             Billing and Collections Mastered
           </div>
         </div>
-        <div className="ml-auto flex items-center gap-3 text-xs text-gray-400">
+        <div className="ml-auto flex items-center gap-3 text-xs text-neutral-500">
           <span>
-            {user.email} · <span className="text-gray-200">{ROLE_LABEL[user.role]}</span>
+            {user.email} · <span className="text-neutral-700">{ROLE_LABEL[user.role]}</span>
           </span>
           <form action={signOut}>
             <button
               type="submit"
-              className="rounded-md bg-gray-800 border border-gray-700 text-gray-200 px-2.5 py-1 text-xs"
+              className="bg-neutral-100 border border-neutral-300 text-neutral-800 px-2.5 py-1 text-xs"
             >
               Log out
             </button>
