@@ -25,7 +25,7 @@ export default async function DashboardPage() {
   const nameByResident = Object.fromEntries((directory ?? []).map((d) => [d.id, d]));
   const totalActiveUnits = directory?.length ?? 0;
 
-  const [{ data: monthPayments }, { data: monthSpecial }, { data: billings }, { data: periodPayments }, { data: activeLevy }] =
+  const [{ data: monthPayments }, { data: monthSpecial }, { data: billings }, { data: activeLevy }] =
     await Promise.all([
       supabase
         .from("payments")
@@ -39,8 +39,7 @@ export default async function DashboardPage() {
         .eq("status", "active")
         .gte("date", monthStart)
         .lte("date", monthEnd),
-      supabase.from("billings").select("resident_id, amount").eq("period", period),
-      supabase.from("payments").select("resident_id, amount").eq("period", period).eq("status", "active"),
+      supabase.from("billings").select("id, resident_id, amount").eq("period", period),
       supabase.from("levies").select("id, name, amount_per_unit").eq("status", "active").maybeSingle(),
     ]);
 
@@ -55,9 +54,21 @@ export default async function DashboardPage() {
 
   const noBillingRun = (billings ?? []).length === 0;
   const expectedByResident = Object.fromEntries((billings ?? []).map((b) => [b.resident_id, Number(b.amount)]));
+
+  // "Paid" per bill comes from payment_allocations, oldest-bill-first — same
+  // source as the Outstanding and Aging reports, so this figure reconciles
+  // with both rather than drifting from a payments.period tag match.
+  const billingIds = (billings ?? []).map((b) => b.id);
+  const { data: periodAllocations } = billingIds.length
+    ? await supabase.from("payment_allocations").select("billing_id, amount").in("billing_id", billingIds)
+    : { data: [] as { billing_id: string; amount: number }[] };
+  const paidByBillingId = new Map<string, number>();
+  for (const a of periodAllocations ?? []) {
+    paidByBillingId.set(a.billing_id, (paidByBillingId.get(a.billing_id) ?? 0) + Number(a.amount));
+  }
   const paidByResident = new Map<string, number>();
-  for (const p of periodPayments ?? []) {
-    paidByResident.set(p.resident_id, (paidByResident.get(p.resident_id) ?? 0) + Number(p.amount));
+  for (const b of billings ?? []) {
+    paidByResident.set(b.resident_id, paidByBillingId.get(b.id) ?? 0);
   }
   const billedUnitIds = Object.keys(expectedByResident);
   const paidUnitCount = billedUnitIds.filter(
@@ -141,7 +152,7 @@ export default async function DashboardPage() {
         </div>
         <div
           className="relative overflow-hidden bg-gradient-to-br from-neutral-700/70 via-neutral-800/80 to-neutral-900/90 backdrop-blur-md border border-neutral-600/50 p-3.5 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]"
-          title={`Regular dues billed for ${period} minus payments received for ${period}. Excludes levies and other periods — see Unit Ledger for a resident's full cross-period balance.`}
+          title={`Regular dues billed for ${period} minus amounts allocated to those bills (oldest-bill-first, so a payment tagged with a later period may still count). Excludes levies and other periods — see Unit Ledger for a resident's full cross-period balance.`}
         >
           <div className="text-[11px] uppercase tracking-wide text-gray-400">Outstanding ({period})</div>
           <div className="text-[22px] font-bold mt-1 text-red-400">{formatPhp(outstandingThisMonth)}</div>

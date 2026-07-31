@@ -26,17 +26,23 @@ export async function GET(request: NextRequest) {
     .eq("status", "active")
     .returns<{ id: string; unit_no: string; name: string; status: string }[]>();
 
-  const { data: billings } = await supabase.from("billings").select("resident_id, amount").eq("period", period);
+  const { data: billings } = await supabase.from("billings").select("id, resident_id, amount").eq("period", period);
   const expectedByResident = Object.fromEntries((billings ?? []).map((b) => [b.resident_id, Number(b.amount)]));
 
-  const { data: payments } = await supabase
-    .from("payments")
-    .select("resident_id, amount")
-    .eq("period", period)
-    .eq("status", "active");
+  // "Paid" per bill comes from payment_allocations, oldest-bill-first — same
+  // source the on-screen report and the Aging Report use — so this export
+  // always matches what's shown on screen, per the CSV-matches-totals rule.
+  const billingIds = (billings ?? []).map((b) => b.id);
+  const { data: allocations } = billingIds.length
+    ? await supabase.from("payment_allocations").select("billing_id, amount").in("billing_id", billingIds)
+    : { data: [] as { billing_id: string; amount: number }[] };
+  const paidByBillingId = new Map<string, number>();
+  for (const a of allocations ?? []) {
+    paidByBillingId.set(a.billing_id, (paidByBillingId.get(a.billing_id) ?? 0) + Number(a.amount));
+  }
   const paidByResident = new Map<string, number>();
-  for (const p of payments ?? []) {
-    paidByResident.set(p.resident_id, (paidByResident.get(p.resident_id) ?? 0) + Number(p.amount));
+  for (const b of billings ?? []) {
+    paidByResident.set(b.resident_id, paidByBillingId.get(b.id) ?? 0);
   }
 
   let rows = (directory ?? [])

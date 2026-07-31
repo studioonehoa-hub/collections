@@ -127,6 +127,31 @@ export const payments = pgTable("payments", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+/**
+ * How a payment's amount is spread across one or more billings — a payment
+ * can span multiple bills (oldest-unpaid-first), and a bill can be paid
+ * across multiple payments. Populated automatically by allocate_payment()
+ * (SECURITY DEFINER), never written directly by the app. Any portion of a
+ * payment that couldn't be allocated (no more unpaid bills at the time) is
+ * simply unallocated — a credit, derived as payments.amount minus the sum
+ * of its allocation rows, not stored separately.
+ */
+export const paymentAllocations = pgTable(
+  "payment_allocations",
+  {
+    id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+    paymentId: uuid("payment_id")
+      .notNull()
+      .references(() => payments.id, { onDelete: "cascade" }),
+    billingId: uuid("billing_id")
+      .notNull()
+      .references(() => billings.id, { onDelete: "cascade" }),
+    amount: numeric("amount", { precision: 10, scale: 2 }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex("payment_allocations_payment_billing_idx").on(t.paymentId, t.billingId)],
+);
+
 /** Only one levy may have status = 'active' at a time (enforced by the partial unique index below). */
 export const levies = pgTable(
   "levies",

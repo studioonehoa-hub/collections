@@ -37,6 +37,7 @@ export default async function LedgerPage({
   const priorUnpaidPeriods: string[] = [];
   let levyLabel: string | null = null;
   let levyName: string | null = null;
+  let creditBalance = 0;
 
   if (query) {
     const { data: rows } = await supabase.rpc("resident_lookup", { p_query: query });
@@ -58,9 +59,24 @@ export default async function LedgerPage({
           )
           .eq("resident_id", resident.id)
           .returns<SpecialPaymentRow[]>(),
-        supabase.from("billings").select("period, amount").eq("resident_id", resident.id),
+        supabase.from("billings").select("id, period, amount").eq("resident_id", resident.id),
         supabase.from("levies").select("id, name, amount_per_unit").eq("status", "active").maybeSingle(),
       ]);
+
+    // How much of each of this resident's bills has actually been settled —
+    // via payment_allocations, the oldest-bill-first ledger allocate_payment()
+    // maintains, not the free-text `period` tag entered on the payment (a
+    // payment tagged "Aug 2026" may have been applied to an older unpaid bill
+    // instead). This is also what keeps this figure consistent with the
+    // Outstanding report and Aging Report, which use the same source.
+    const billingIds = (billings ?? []).map((b) => b.id);
+    const { data: allocations } = billingIds.length
+      ? await supabase.from("payment_allocations").select("billing_id, amount").in("billing_id", billingIds)
+      : { data: [] as { billing_id: string; amount: number }[] };
+    const paidByBillingId = new Map<string, number>();
+    for (const a of allocations ?? []) {
+      paidByBillingId.set(a.billing_id, (paidByBillingId.get(a.billing_id) ?? 0) + Number(a.amount));
+    }
 
     const levyIds = [...new Set((specialPayments ?? []).map((s) => s.levy_id))];
     const { data: levies } = levyIds.length
@@ -116,25 +132,34 @@ export default async function LedgerPage({
 
     // Prior unpaid balance: regular dues only, strictly periods BEFORE the
     // current one — never the current period, never levies (those are
-    // tracked separately below via levyLabel).
-    const paidByPeriod = new Map<string, number>();
-    for (const p of payments ?? []) {
-      if (p.status !== "active") continue;
-      paidByPeriod.set(p.period ?? "", (paidByPeriod.get(p.period ?? "") ?? 0) + Number(p.amount));
-    }
+    // tracked separately below via levyLabel). "Paid" per bill comes from
+    // payment_allocations (see above), not from matching payments.period —
+    // oldest-bill-first allocation means an old bill can be settled by a
+    // payment tagged with a later period.
     // currentPeriod() always produces a "MMM YYYY" string parsePeriod can
     // parse; the fallback only exists to satisfy the general Date|null type.
     const thisPeriod = parsePeriod(currentPeriod()) ?? new Date();
     for (const b of billings ?? []) {
       const billPeriod = parsePeriod(b.period);
       if (!billPeriod || billPeriod >= thisPeriod) continue; // skip unparseable or current/future periods
-      const paid = paidByPeriod.get(b.period) ?? 0;
+      const paid = paidByBillingId.get(b.id) ?? 0;
       const shortfall = Number(b.amount) - paid;
       if (shortfall > 0.005) {
         priorUnpaid += shortfall;
         priorUnpaidPeriods.push(b.period);
       }
     }
+
+    // Credit balance: money received that hasn't settled any bill yet.
+    // allocate_payment() only ever allocates a resident's payments against
+    // that same resident's billings, so summing this resident's already-
+    // fetched billing allocations gives the total allocated across all of
+    // their payments, current/future periods included.
+    const totalActivePayments = (payments ?? [])
+      .filter((p) => p.status === "active")
+      .reduce((sum, p) => sum + Number(p.amount), 0);
+    const totalAllocated = [...paidByBillingId.values()].reduce((sum, v) => sum + v, 0);
+    creditBalance = Math.max(0, totalActivePayments - totalAllocated);
 
     if (activeLevy) {
       levyName = activeLevy.name;
@@ -185,7 +210,7 @@ export default async function LedgerPage({
             </Link>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-3 mb-4">
+          <div className="grid gap-3 sm:grid-cols-4 mb-4">
             <div
               className="bg-neutral-800 border border-neutral-700 p-3.5"
               title="Sum of active (non-voided) regular dues payments received this calendar year."
@@ -196,7 +221,7 @@ export default async function LedgerPage({
             </div>
             <div
               className="bg-neutral-800 border border-neutral-700 p-3.5"
-              title="Unpaid balance on regular dues bills from periods before the current one. Excludes the current period and excludes levies."
+              title="Unpaid balance on regular dues bills from periods before the current one, after oldest-bill-first allocation. Excludes the current period and excludes levies."
             >
               <div className="text-[11px] uppercase tracking-wide text-gray-400">Prior unpaid balance</div>
               <div className={`text-[22px] font-bold mt-1 ${priorUnpaid > 0 ? "text-red-400" : ""}`}>
@@ -207,6 +232,16 @@ export default async function LedgerPage({
               ) : (
                 <div className="text-[11.5px] text-gray-400 mt-0.5">No prior periods unpaid</div>
               )}
+            </div>
+            <div
+              className="bg-neutral-800 border border-neutral-700 p-3.5"
+              title="Payments received that haven't been applied to any bill yet — every unpaid bill for this unit is fully covered by allocated payments."
+            >
+              <div className="text-[11px] uppercase tracking-wide text-gray-400">Credit balance</div>
+              <div className={`text-[22px] font-bold mt-1 ${creditBalance > 0.005 ? "text-emerald-400" : ""}`}>
+                {formatPhp(creditBalance)}
+              </div>
+              <div className="text-[11.5px] text-gray-400 mt-0.5">Unapplied to any bill</div>
             </div>
             <div
               className="bg-neutral-800 border border-neutral-700 p-3.5"

@@ -37,6 +37,15 @@
 --     screen, without exposing which resident belongs to which group by
 --     name — restricted to super_admin/admin (the only roles that manage
 --     billing).
+--   - payment_allocations: how a payment's amount is spread across one or
+--     more billings, oldest-period-first. Only allocate_payment() (run
+--     right after a payment insert) and void_payment() (which clears a
+--     payment's allocations before voiding, releasing its bills back to
+--     unpaid) ever write it — no INSERT/UPDATE/DELETE grant exists for
+--     authenticated. Any remainder of a payment beyond its resident's
+--     unpaid billings is left unallocated on purpose — that's the
+--     resident's credit balance, derived as payment.amount minus the sum
+--     of its allocation rows, never stored separately.
 -- ============================================================
 
 -- ---------- Helper: current caller's role ----------
@@ -78,6 +87,7 @@ alter table public.dues_groups enable row level security;
 alter table public.residents enable row level security;
 alter table public.billings enable row level security;
 alter table public.payments enable row level security;
+alter table public.payment_allocations enable row level security;
 alter table public.levies enable row level security;
 alter table public.special_payments enable row level security;
 
@@ -294,6 +304,12 @@ begin
     raise exception 'insufficient privilege to void a payment';
   end if;
 
+  -- Release this payment's bill allocations first, so the void takes
+  -- effect immediately: the bills it was covering go back to unpaid
+  -- (aging/outstanding re-derive that from payment_allocations, not from
+  -- any stored "paid" flag on the billing itself).
+  delete from public.payment_allocations where payment_id = p_payment_id;
+
   update public.payments
   set status = 'voided',
       voided_by = auth.uid(),
@@ -313,6 +329,89 @@ $$;
 
 revoke all on function public.void_payment(uuid, text) from public;
 grant execute on function public.void_payment(uuid, text) to authenticated;
+
+-- ============================================================
+-- payment_allocations (oldest-bill-first apportionment of a payment's
+-- amount across one or more billings)
+-- ============================================================
+grant select on table public.payment_allocations to authenticated;
+-- No insert/update/delete grant: rows are written only by
+-- allocate_payment() below and removed only by void_payment() above,
+-- both SECURITY DEFINER and both bypassing RLS as the function owner.
+
+create policy payment_allocations_select_any on public.payment_allocations
+  for select to authenticated
+  using (public.current_user_role() is not null);
+
+-- Parses a "Mon YYYY" period label (e.g. "Jul 2026") into a real date so
+-- it can be sorted chronologically — periods are stored as free text since
+-- they're user-facing labels, but allocation and the Aging Report both
+-- need correct period ordering, which plain text sorting cannot give.
+create or replace function public.period_to_date(p_period text)
+returns date
+language sql
+immutable
+as $$
+  select to_date(p_period, 'Mon YYYY')
+$$;
+
+-- Spreads a payment's amount across its resident's unpaid billings,
+-- oldest period first. A billing's "unpaid" amount is derived here —
+-- its amount minus whatever's already been allocated to it across any
+-- payment — rather than stored, so voiding a payment (which deletes its
+-- allocations) automatically puts the billing back to unpaid with no
+-- separate bookkeeping. Any remainder once every unpaid billing is fully
+-- covered is deliberately left unallocated — that's the resident's credit
+-- balance, derived by the caller as payment.amount minus the sum of its
+-- allocation rows. SECURITY DEFINER so it can write payment_allocations
+-- (no direct insert grant exists) and read every resident's billings
+-- regardless of the caller's row-level access; the role check below is
+-- the real gate, matching who may insert a payment in the first place.
+create or replace function public.allocate_payment(p_payment_id uuid)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_payment public.payments;
+  v_remaining numeric(10,2);
+  v_billing record;
+  v_take numeric(10,2);
+begin
+  if public.current_user_role() not in ('super_admin', 'admin', 'encoder') then
+    raise exception 'insufficient privilege to allocate a payment';
+  end if;
+
+  select * into v_payment from public.payments where id = p_payment_id;
+  if v_payment.id is null then
+    raise exception 'payment % not found', p_payment_id;
+  end if;
+
+  v_remaining := v_payment.amount;
+
+  for v_billing in
+    select b.id, b.period, b.created_at, b.amount - coalesce(sum(pa.amount), 0) as unpaid
+    from public.billings b
+    left join public.payment_allocations pa on pa.billing_id = b.id
+    where b.resident_id = v_payment.resident_id
+    group by b.id, b.period, b.amount, b.created_at
+    having b.amount - coalesce(sum(pa.amount), 0) > 0.005
+    order by public.period_to_date(b.period) asc, b.created_at asc
+  loop
+    exit when v_remaining <= 0.005;
+    v_take := least(v_remaining, v_billing.unpaid);
+
+    insert into public.payment_allocations (payment_id, billing_id, amount)
+    values (p_payment_id, v_billing.id, v_take);
+
+    v_remaining := v_remaining - v_take;
+  end loop;
+end;
+$$;
+
+revoke all on function public.allocate_payment(uuid) from public;
+grant execute on function public.allocate_payment(uuid) to authenticated;
 
 -- ============================================================
 -- levies (name + amount only — not sensitive)

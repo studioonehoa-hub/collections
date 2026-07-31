@@ -24,4 +24,5 @@ export const NAV_ITEMS: NavItem[] = [
     roles: ["super_admin", "admin", "encoder", "report_generator"],
   },
   { href: "/outstanding", label: "Outstanding", roles: ["super_admin", "admin", "report_generator"] },
+  { href: "/aging", label: "Aging Report", roles: ["super_admin", "admin", "report_generator"] },
 ];

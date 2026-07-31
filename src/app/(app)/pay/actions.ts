@@ -26,17 +26,26 @@ export async function createPayment(
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.from("payments").insert({
-    resident_id: residentId,
-    date,
-    amount,
-    mode,
-    received_by: receivedBy,
-    period,
-    notes,
-  });
+  const { data: inserted, error } = await supabase
+    .from("payments")
+    .insert({
+      resident_id: residentId,
+      date,
+      amount,
+      mode,
+      received_by: receivedBy,
+      period,
+      notes,
+    })
+    .select("id")
+    .single();
 
   if (error) return { error: error.message };
+
+  const { error: allocError } = await supabase.rpc("allocate_payment", {
+    p_payment_id: inserted.id,
+  });
+  if (allocError) return { error: `Payment saved but allocation failed: ${allocError.message}` };
 
   redirect(`/pay?unit=${encodeURIComponent(unitNo)}&saved=1`);
 }

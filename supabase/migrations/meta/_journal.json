@@ -15,6 +15,13 @@
       "when": 1784275560814,
       "tag": "0001_flowery_toxin",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1785517223407,
+      "tag": "0002_exotic_dark_phoenix",
+      "breakpoints": true
     }
   ]
 }
