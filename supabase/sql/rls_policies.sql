@@ -8,8 +8,22 @@
 --
 -- Design summary:
 --   - residents: aggregate SELECT is super_admin only (RLS-enforced,
---     not app-hidden). admin may insert/update but has no blanket
---     SELECT either — "individual view/edit only" per spec.
+--     not app-hidden). admin and encoder may insert/update but neither
+--     has a blanket SELECT — "individual view/edit only" per spec.
+--     encoder/admin reach a record to edit only via resident_lookup(),
+--     same as every other non-super-admin role; there is still no
+--     encoder route to /residents (the aggregate list) at all.
+--   - update_resident(): SECURITY DEFINER, admin/encoder's ONLY path to
+--     UPDATE residents — there is no direct-table UPDATE policy at all
+--     (residents_update_admin was removed). This isn't a style choice:
+--     Postgres RLS requires a row to satisfy a SELECT-granting policy
+--     before an UPDATE's own USING clause can even find it, and admin/
+--     encoder deliberately have zero SELECT policy on residents, so a
+--     plain RLS UPDATE policy alone would have silently matched zero
+--     rows for them no matter what its USING clause said (verified this
+--     empirically before settling on the function). super_admin also
+--     goes through this function now, for one single write path instead
+--     of two.
 --   - resident_directory: a 3-column view (id, unit_no, status) — no
 --     name, no contacts/dues data — readable by every role. Deliberately
 --     excludes name so no role below super_admin can reconstruct a
@@ -144,20 +158,72 @@ create unique index if not exists dues_groups_name_unique_ci
 -- ============================================================
 -- residents (sensitive master data: contacts, dues assignment)
 -- ============================================================
-grant select, insert, update on table public.residents to authenticated;
+grant select, insert on table public.residents to authenticated;
+-- No UPDATE grant: every update goes through update_resident() below,
+-- which is SECURITY DEFINER and needs no table-level grant to write.
 
 create policy residents_select_super_admin on public.residents
   for select to authenticated
   using (public.current_user_role() = 'super_admin');
 
+-- INSERT works fine as a plain RLS policy (unlike UPDATE — see
+-- update_resident() below) because the app never chains `.select()` onto
+-- `.insert()`, so Postgres never needs to hand the new row back through a
+-- SELECT-shaped check. encoder gets add/edit here (never a blanket SELECT)
+-- so front-desk data entry doesn't have to route through admin.
+drop policy if exists residents_insert_admin on public.residents;
 create policy residents_insert_admin on public.residents
   for insert to authenticated
-  with check (public.current_user_role() in ('super_admin', 'admin'));
+  with check (public.current_user_role() in ('super_admin', 'admin', 'encoder'));
 
-create policy residents_update_admin on public.residents
-  for update to authenticated
-  using (public.current_user_role() in ('super_admin', 'admin'))
-  with check (public.current_user_role() in ('super_admin', 'admin'));
+-- Single controlled write path for editing an existing resident — see the
+-- design-summary note above for why a direct-table UPDATE policy can't work
+-- here at all for admin/encoder.
+drop policy if exists residents_update_admin on public.residents;
+
+create or replace function public.update_resident(
+  p_id uuid,
+  p_name text,
+  p_unit_no text,
+  p_dues_group_id uuid,
+  p_dues_override numeric,
+  p_billing_contact_1 text,
+  p_billing_contact_2 text,
+  p_status public.resident_status
+)
+returns public.residents
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_row public.residents;
+begin
+  if public.current_user_role() not in ('super_admin', 'admin', 'encoder') then
+    raise exception 'insufficient privilege to update a resident';
+  end if;
+
+  update public.residents
+  set name = p_name,
+      unit_no = p_unit_no,
+      dues_group_id = p_dues_group_id,
+      dues_override = p_dues_override,
+      billing_contact_1 = p_billing_contact_1,
+      billing_contact_2 = p_billing_contact_2,
+      status = p_status
+  where id = p_id
+  returning * into v_row;
+
+  if v_row.id is null then
+    raise exception 'resident % not found', p_id;
+  end if;
+
+  return v_row;
+end;
+$$;
+
+revoke all on function public.update_resident(uuid, text, text, uuid, numeric, text, text, public.resident_status) from public;
+grant execute on function public.update_resident(uuid, text, text, uuid, numeric, text, text, public.resident_status) to authenticated;
 
 -- Non-sensitive projection used for dropdowns/joins on payment, billing,
 -- ledger, and outstanding-report screens by every role. Deliberately omits

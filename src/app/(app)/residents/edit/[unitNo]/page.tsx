@@ -10,7 +10,7 @@ export default async function EditResidentPage({
 }: {
   params: Promise<{ unitNo: string }>;
 }) {
-  await requireRole(["super_admin", "admin"]);
+  await requireRole(["super_admin", "admin", "encoder"]);
   const { unitNo } = await params;
   const supabase = await createClient();
 

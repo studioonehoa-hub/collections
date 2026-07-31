@@ -4,7 +4,7 @@ import { ResidentForm } from "@/components/ResidentForm";
 import { createResident } from "../actions";
 
 export default async function NewResidentPage() {
-  await requireRole(["super_admin", "admin"]);
+  await requireRole(["super_admin", "admin", "encoder"]);
   const supabase = await createClient();
 
   const { data: duesGroups } = await supabase

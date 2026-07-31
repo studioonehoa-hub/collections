@@ -12,7 +12,7 @@ export default async function LookupPage({
   const user = await requireRole(["super_admin", "admin", "encoder", "report_generator"]);
   const { q } = await searchParams;
   const query = q?.trim() ?? "";
-  const canEdit = user.role === "super_admin" || user.role === "admin";
+  const canEdit = user.role === "super_admin" || user.role === "admin" || user.role === "encoder";
 
   const supabase = await createClient();
 
