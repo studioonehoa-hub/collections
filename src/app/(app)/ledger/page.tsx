@@ -2,6 +2,7 @@ import { requireRole } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { formatDate, formatPhp } from "@/lib/format";
 import type { PaymentRow, ResidentRow, SpecialPaymentRow } from "@/lib/types";
+import { voidLedgerEntry } from "./actions";
 
 type LedgerEntry = {
   id: string;
@@ -19,7 +20,8 @@ export default async function LedgerPage({
 }: {
   searchParams: Promise<{ unit?: string }>;
 }) {
-  await requireRole(["super_admin", "admin", "encoder", "report_generator"]);
+  const user = await requireRole(["super_admin", "admin", "encoder", "report_generator"]);
+  const canVoid = user.role === "super_admin" || user.role === "admin";
   const { unit } = await searchParams;
   const query = unit?.trim() ?? "";
   const supabase = await createClient();
@@ -172,6 +174,7 @@ export default async function LedgerPage({
                   <th className="px-3 py-2">Mode</th>
                   <th className="px-3 py-2">Received</th>
                   <th className="px-3 py-2 text-right">Amount</th>
+                  {canVoid && <th className="px-3 py-2">Void</th>}
                 </tr>
               </thead>
               <tbody>
@@ -203,11 +206,32 @@ export default async function LedgerPage({
                     <td className={`px-3 py-2 text-right tabular-nums ${e.voided ? "line-through" : ""}`}>
                       {formatPhp(e.amount)}
                     </td>
+                    {canVoid && (
+                      <td className="px-3 py-2">
+                        {!e.voided && (
+                          <form action={voidLedgerEntry} className="flex gap-1.5 items-center">
+                            <input type="hidden" name="id" value={e.id} />
+                            <input type="hidden" name="type" value={e.type} />
+                            <input type="hidden" name="unit" value={resident?.unit_no ?? ""} />
+                            <input
+                              type="text"
+                              name="reason"
+                              required
+                              placeholder="Reason (required)"
+                              className="w-36 border border-neutral-600 bg-neutral-950 px-1.5 py-1 text-xs text-gray-100 outline-none focus:border-neutral-400"
+                            />
+                            <button type="submit" className="border border-neutral-600 px-2 py-1 text-xs shrink-0">
+                              Void
+                            </button>
+                          </form>
+                        )}
+                      </td>
+                    )}
                   </tr>
                 ))}
                 {entries.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="px-3 py-6 text-center text-gray-400">
+                    <td colSpan={canVoid ? 7 : 6} className="px-3 py-6 text-center text-gray-400">
                       No payment history yet.
                     </td>
                   </tr>
