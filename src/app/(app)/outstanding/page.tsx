@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requireRole } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { currentPeriod, formatPhp } from "@/lib/format";
+import { getValidPeriods } from "@/lib/periods";
 
 type Row = {
   unit_no: string;
@@ -19,6 +20,9 @@ export default async function OutstandingPage({
   const { period: periodParam, filter } = await searchParams;
   const period = periodParam?.trim() || currentPeriod();
   const supabase = await createClient();
+
+  const validPeriods = await getValidPeriods(supabase);
+  const periodOptions = validPeriods.includes(period) ? validPeriods : [...validPeriods, period];
 
   const { data: directory } = await supabase
     .from("resident_report_directory")
@@ -67,12 +71,17 @@ export default async function OutstandingPage({
       <p className="text-gray-400 text-[12.5px] mb-4">Billed vs paid per unit, per month.</p>
 
       <form method="GET" className="flex gap-2 flex-wrap items-center mb-4">
-        <input
+        <select
           name="period"
           defaultValue={period}
-          placeholder="e.g. Jul 2026"
-          className="max-w-[160px] border border-neutral-600 bg-neutral-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-neutral-400"
-        />
+          className="border border-neutral-600 px-3 py-2 text-sm text-gray-100 bg-neutral-950"
+        >
+          {periodOptions.map((p) => (
+            <option key={p} value={p}>
+              {p}
+            </option>
+          ))}
+        </select>
         <select
           name="filter"
           defaultValue={filter ?? "all"}
@@ -105,9 +114,15 @@ export default async function OutstandingPage({
             <tr className="text-left text-[11px] uppercase tracking-wide text-gray-400 border-b border-neutral-700">
               <th className="px-3 py-2">Unit</th>
               <th className="px-3 py-2">Name</th>
-              <th className="px-3 py-2 text-right">Expected</th>
-              <th className="px-3 py-2 text-right">Paid</th>
-              <th className="px-3 py-2 text-right">Balance</th>
+              <th className="px-3 py-2 text-right" title={`Regular dues billed for ${period} (this period only — not levies, not other periods).`}>
+                Expected
+              </th>
+              <th className="px-3 py-2 text-right" title={`Active (non-voided) regular dues payments recorded for ${period}.`}>
+                Paid
+              </th>
+              <th className="px-3 py-2 text-right" title="Expected minus paid, for this period only.">
+                Balance
+              </th>
               <th className="px-3 py-2">Status</th>
             </tr>
           </thead>

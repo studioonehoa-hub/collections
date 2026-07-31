@@ -1,6 +1,7 @@
 import { requireRole } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { currentPeriod, formatPhp } from "@/lib/format";
+import { getValidPeriods } from "@/lib/periods";
 import type { ResidentRow } from "@/lib/types";
 import { createPayment } from "./actions";
 import { PaymentForm } from "@/components/PaymentForm";
@@ -14,6 +15,7 @@ export default async function RecordPaymentPage({
   const { unit, saved } = await searchParams;
   const query = unit?.trim() ?? "";
   const supabase = await createClient();
+  const validPeriods = await getValidPeriods(supabase);
 
   let resident: ResidentRow | null = null;
   let groupLabel = "";
@@ -83,6 +85,7 @@ export default async function RecordPaymentPage({
             unitNo={resident.unit_no}
             defaultAmount={defaultAmount}
             defaultPeriod={currentPeriod()}
+            periods={validPeriods}
             submitLabel="Save payment"
           />
           <p className="text-gray-400 text-[12px] mt-2">

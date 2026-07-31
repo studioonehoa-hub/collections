@@ -129,19 +129,28 @@ export default async function DashboardPage() {
       )}
 
       <div className="grid gap-3 sm:grid-cols-4 mb-4">
-        <div className="relative overflow-hidden bg-gradient-to-br from-neutral-700/70 via-neutral-800/80 to-neutral-900/90 backdrop-blur-md border border-neutral-600/50 p-3.5 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]">
+        <div
+          className="relative overflow-hidden bg-gradient-to-br from-neutral-700/70 via-neutral-800/80 to-neutral-900/90 backdrop-blur-md border border-neutral-600/50 p-3.5 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]"
+          title="Active (non-voided) regular dues + levy payments by the date actually received this calendar month — not scoped to a single billing period."
+        >
           <div className="text-[11px] uppercase tracking-wide text-gray-400">Collected this month</div>
           <div className="text-[22px] font-bold mt-1">{formatPhp(collectedThisMonth)}</div>
           <div className="text-[11.5px] text-gray-400 mt-0.5">
             {paidUnitCount} of {billedUnitIds.length} units paid
           </div>
         </div>
-        <div className="relative overflow-hidden bg-gradient-to-br from-neutral-700/70 via-neutral-800/80 to-neutral-900/90 backdrop-blur-md border border-neutral-600/50 p-3.5 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]">
+        <div
+          className="relative overflow-hidden bg-gradient-to-br from-neutral-700/70 via-neutral-800/80 to-neutral-900/90 backdrop-blur-md border border-neutral-600/50 p-3.5 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]"
+          title={`Regular dues billed for ${period} minus payments received for ${period}. Excludes levies and other periods — see Unit Ledger for a resident's full cross-period balance.`}
+        >
           <div className="text-[11px] uppercase tracking-wide text-gray-400">Outstanding ({period})</div>
           <div className="text-[22px] font-bold mt-1 text-red-400">{formatPhp(outstandingThisMonth)}</div>
           <div className="text-[11.5px] text-gray-400 mt-0.5">{unpaidUnitCount} units unpaid</div>
         </div>
-        <div className="relative overflow-hidden bg-gradient-to-br from-neutral-700/70 via-neutral-800/80 to-neutral-900/90 backdrop-blur-md border border-neutral-600/50 p-3.5 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]">
+        <div
+          className="relative overflow-hidden bg-gradient-to-br from-neutral-700/70 via-neutral-800/80 to-neutral-900/90 backdrop-blur-md border border-neutral-600/50 p-3.5 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]"
+          title="Total active special payments received against the currently active levy, all-time, vs. the per-unit amount times total active units. Separate from regular dues."
+        >
           <div className="text-[11px] uppercase tracking-wide text-gray-400">
             {levyLine ? `Levy: ${levyLine.name}` : "Levy"}
           </div>
@@ -157,7 +166,10 @@ export default async function DashboardPage() {
             <div className="text-[13px] text-gray-400 mt-1">No active levy</div>
           )}
         </div>
-        <div className="relative overflow-hidden bg-gradient-to-br from-neutral-700/70 via-neutral-800/80 to-neutral-900/90 backdrop-blur-md border border-neutral-600/50 p-3.5 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]">
+        <div
+          className="relative overflow-hidden bg-gradient-to-br from-neutral-700/70 via-neutral-800/80 to-neutral-900/90 backdrop-blur-md border border-neutral-600/50 p-3.5 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]"
+          title="Breakdown of this calendar month's collected total (regular dues + levy payments combined) by payment mode."
+        >
           <div className="text-[11px] uppercase tracking-wide text-gray-400">By mode ({period})</div>
           <div className="text-[13px] leading-7 mt-1">
             {byMode.size === 0 && <span className="text-gray-400">No collections yet</span>}

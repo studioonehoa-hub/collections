@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requireRole } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { currentPeriod, formatDate, formatPhp } from "@/lib/format";
+import { getValidPeriods } from "@/lib/periods";
 import type { BillingRow, DuesGroupSummaryRow } from "@/lib/types";
 import { generateBillingRun, markBillingReceived, markBillingSent } from "./actions";
 
@@ -21,6 +22,9 @@ export default async function BillingPage({
   const { period: periodParam, filter } = await searchParams;
   const period = periodParam?.trim() || currentPeriod();
   const supabase = await createClient();
+
+  const validPeriods = await getValidPeriods(supabase);
+  const periodOptions = validPeriods.includes(period) ? validPeriods : [...validPeriods, period];
 
   const { data: groups } = await supabase
     .from("dues_group_summary")
@@ -64,9 +68,23 @@ export default async function BillingPage({
       </p>
 
       <div className="grid gap-3 sm:grid-cols-3 mb-4">
-        <Card k="Billed" v={formatPhp(totalBilled)} d={`${totalCount} units`} />
-        <Card k="Sent" v={`${sentCount} / ${totalCount}`} d={`${totalCount - sentCount} pending dispatch`} />
-        <Card k="Received / ack'd" v={`${receivedCount} / ${sentCount}`} />
+        <Card
+          k="Billed"
+          v={formatPhp(totalBilled)}
+          d={`${totalCount} units`}
+          title={`Total regular dues billed for ${period} across all units in this billing run. Excludes levies.`}
+        />
+        <Card
+          k="Sent"
+          v={`${sentCount} / ${totalCount}`}
+          d={`${totalCount - sentCount} pending dispatch`}
+          title={`Units for ${period} whose bill has been marked sent (any channel), out of all billed units.`}
+        />
+        <Card
+          k="Received / ack'd"
+          v={`${receivedCount} / ${sentCount}`}
+          title="Of the bills marked sent, how many the resident has confirmed receiving or acknowledged."
+        />
       </div>
 
       <div className="bg-neutral-800 border border-neutral-700 p-4 mb-4">
@@ -122,12 +140,17 @@ export default async function BillingPage({
 
         <div className="flex gap-2 flex-wrap items-center mb-3">
           <form method="GET" className="flex gap-2 items-center">
-            <input
+            <select
               name="period"
               defaultValue={period}
-              placeholder="e.g. Jul 2026"
-              className="max-w-[140px] border border-neutral-600 bg-neutral-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-neutral-400"
-            />
+              className="border border-neutral-600 px-3 py-2 text-sm text-gray-100 bg-neutral-950"
+            >
+              {periodOptions.map((p) => (
+                <option key={p} value={p}>
+                  {p}
+                </option>
+              ))}
+            </select>
             <select
               name="filter"
               defaultValue={filter ?? "all"}
@@ -236,9 +259,9 @@ export default async function BillingPage({
   );
 }
 
-function Card({ k, v, d }: { k: string; v: string; d?: string }) {
+function Card({ k, v, d, title }: { k: string; v: string; d?: string; title?: string }) {
   return (
-    <div className="bg-neutral-800 border border-neutral-700 p-3.5">
+    <div className="bg-neutral-800 border border-neutral-700 p-3.5" title={title}>
       <div className="text-[11px] uppercase tracking-wide text-gray-400">{k}</div>
       <div className="text-[22px] font-bold mt-1">{v}</div>
       {d && <div className="text-[11.5px] text-gray-400 mt-0.5">{d}</div>}

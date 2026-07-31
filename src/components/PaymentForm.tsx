@@ -18,6 +18,7 @@ export function PaymentForm({
   unitNo,
   defaultAmount,
   defaultPeriod,
+  periods,
   submitLabel,
 }: {
   action: (state: PaymentFormState, formData: FormData) => Promise<PaymentFormState>;
@@ -25,6 +26,7 @@ export function PaymentForm({
   unitNo: string;
   defaultAmount: string;
   defaultPeriod: string;
+  periods: string[];
   submitLabel: string;
 }) {
   const [state, formAction, pending] = useActionState(action, { error: null });
@@ -93,12 +95,18 @@ export function PaymentForm({
         </div>
         <div>
           <label className="block text-xs font-semibold text-gray-300 mb-1">For period (optional)</label>
-          <input
+          <select
             name="period"
-            defaultValue={defaultPeriod}
-            placeholder="e.g. Jul 2026"
-            className="w-full border border-neutral-600 bg-neutral-950 px-3 py-2 text-sm text-gray-100 outline-none focus:border-neutral-400"
-          />
+            defaultValue={periods.includes(defaultPeriod) ? defaultPeriod : ""}
+            className="w-full border border-neutral-600 px-3 py-2 text-sm text-gray-100 bg-neutral-950"
+          >
+            <option value="">No period (arrears / general)</option>
+            {periods.map((p) => (
+              <option key={p} value={p}>
+                {p}
+              </option>
+            ))}
+          </select>
         </div>
         <div>
           <label className="block text-xs font-semibold text-gray-300 mb-1">Notes (optional)</label>
