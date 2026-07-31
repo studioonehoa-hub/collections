@@ -97,6 +97,16 @@ create policy users_update_super_admin on public.users
   using (public.current_user_role() = 'super_admin')
   with check (public.current_user_role() = 'super_admin');
 
+-- Minimal staff (not resident) directory — id/email/role only — so any
+-- authenticated role can resolve "voided by" attribution on a payment even
+-- when the voider was a different staff member. Low sensitivity (internal
+-- admin/encoder/report_generator accounts, not resident data), needed for
+-- the audit trail to actually be readable per-viewer, not just per-super_admin.
+create or replace view public.staff_directory as
+  select id, email, role from public.users;
+
+grant select on public.staff_directory to authenticated;
+
 -- ============================================================
 -- dues_groups (name + amount only — not sensitive)
 -- ============================================================
@@ -114,6 +124,12 @@ create policy dues_groups_update_admin on public.dues_groups
   for update to authenticated
   using (public.current_user_role() in ('super_admin', 'admin'))
   with check (public.current_user_role() in ('super_admin', 'admin'));
+
+-- Case-insensitive, whitespace-insensitive uniqueness on name — "Test
+-- Standard", "TEST Standard ", and " test standard" are all the same group.
+-- The app also trims before insert/update; this index is the actual gate.
+create unique index if not exists dues_groups_name_unique_ci
+  on public.dues_groups (lower(trim(name)));
 
 -- ============================================================
 -- residents (sensitive master data: contacts, dues assignment)
@@ -178,11 +194,17 @@ create or replace view public.dues_group_summary as
 
 grant select on public.dues_group_summary to authenticated;
 
--- Single-resident, exact-match lookup (name or unit_no) for every role.
--- Returns the full record (contacts included, as shown on the Resident
--- Lookup screen) but structurally never more than one row and never a
--- browsable list — this is what the "single lookup only" rule actually
--- rests on for admin/encoder/report_generator.
+-- Single-resident, case-insensitive exact-match lookup (name or unit_no) for
+-- every role. Returns the full record (contacts included, as shown on the
+-- Resident Lookup screen) but structurally never more than one row and
+-- never a browsable list — this is what the "single lookup only" rule
+-- actually rests on for admin/encoder/report_generator.
+--
+-- Case-insensitive via lower()=lower(), deliberately NOT via ILIKE: ILIKE
+-- treats "_" and "%" in the query as wildcards, which would turn this into
+-- an accidental partial-match/enumeration surface for any unit_no or name
+-- containing those characters. lower()=lower() has no wildcard semantics
+-- at all — still a true exact match, just case-insensitive.
 create or replace function public.resident_lookup(p_query text)
 returns setof public.residents
 language sql
@@ -193,7 +215,7 @@ as $$
   select *
   from public.residents
   where public.current_user_role() is not null
-    and (unit_no = p_query or name = p_query)
+    and (lower(unit_no) = lower(p_query) or lower(name) = lower(p_query))
   limit 1
 $$;
 

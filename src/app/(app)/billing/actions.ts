@@ -21,7 +21,14 @@ export async function createDuesGroup(
 
   const supabase = await createClient();
   const { error } = await supabase.from("dues_groups").insert({ name, monthly_amount: monthlyAmount });
-  if (error) return { error: error.message };
+  if (error) {
+    return {
+      error:
+        error.code === "23505"
+          ? `A group named "${name}" already exists (matching is case- and whitespace-insensitive).`
+          : error.message,
+    };
+  }
 
   redirect("/billing");
 }
@@ -44,7 +51,14 @@ export async function updateDuesGroup(
     .from("dues_groups")
     .update({ name, monthly_amount: monthlyAmount })
     .eq("id", id);
-  if (error) return { error: error.message };
+  if (error) {
+    return {
+      error:
+        error.code === "23505"
+          ? `A group named "${name}" already exists (matching is case- and whitespace-insensitive).`
+          : error.message,
+    };
+  }
 
   redirect("/billing");
 }

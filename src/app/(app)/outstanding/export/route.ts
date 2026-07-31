@@ -54,6 +54,10 @@ export async function GET(request: NextRequest) {
     rows = rows.filter((r) => r.balance > 0.005);
   }
 
+  const totalExpected = rows.reduce((sum, r) => sum + r.expected, 0);
+  const totalPaid = rows.reduce((sum, r) => sum + r.paid, 0);
+  const totalBalance = totalExpected - totalPaid;
+
   const header = ["Unit", "Name", "Expected", "Paid", "Balance", "Status"];
   const lines = [
     header.join(","),
@@ -62,6 +66,11 @@ export async function GET(request: NextRequest) {
         .map(csvCell)
         .join(","),
     ),
+    // Same totals row shown on-screen — kept as the final line, not mixed
+    // into the sortable data above it.
+    [`Total (${rows.length} units)`, "", totalExpected.toFixed(2), totalPaid.toFixed(2), totalBalance.toFixed(2), ""]
+      .map(csvCell)
+      .join(","),
   ];
 
   const filename = `outstanding-${period.replace(/\s+/g, "-") || "report"}.csv`;

@@ -46,6 +46,8 @@ export async function GET(request: NextRequest) {
     ...(specialPayments ?? []).map((p) => ({ ...p, type: "Levy" })),
   ].sort((a, b) => (a.date < b.date ? -1 : 1));
 
+  const total = rows.reduce((sum, r) => sum + Number(r.amount), 0);
+
   const header = ["Date", "Unit", "Name", "Type", "Mode", "Received By", "Amount"];
   const lines = [
     header.join(","),
@@ -62,6 +64,8 @@ export async function GET(request: NextRequest) {
         .map(csvCell)
         .join(","),
     ),
+    // Matches the "Collected this month" figure on the Dashboard card.
+    [`Total (${rows.length} entries)`, "", "", "", "", "", total.toFixed(2)].map(csvCell).join(","),
   ];
 
   return new Response(lines.join("\n"), {

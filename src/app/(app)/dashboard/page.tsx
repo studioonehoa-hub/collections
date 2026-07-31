@@ -88,22 +88,31 @@ export default async function DashboardPage() {
 
   const { data: recentPayments } = await supabase
     .from("payments")
-    .select("id, resident_id, date, amount, mode, received_by, status")
+    .select("id, resident_id, date, amount, mode, received_by, status, created_at")
     .eq("status", "active")
     .order("date", { ascending: false })
+    .order("created_at", { ascending: false })
     .limit(10);
   const { data: recentSpecial } = await supabase
     .from("special_payments")
-    .select("id, resident_id, date, amount, mode, received_by, status")
+    .select("id, resident_id, date, amount, mode, received_by, status, created_at")
     .eq("status", "active")
     .order("date", { ascending: false })
+    .order("created_at", { ascending: false })
     .limit(10);
 
+  // Strictly newest -> oldest across the whole combined list, not grouped by
+  // date first: primary key is the full created_at timestamp (not just the
+  // date, which only has day precision), with id as a final deterministic
+  // tiebreaker for the vanishingly rare same-instant case.
   const recentEntries = [
     ...(recentPayments ?? []).map((p) => ({ ...p, type: "Monthly" as const })),
     ...(recentSpecial ?? []).map((p) => ({ ...p, type: "Levy" as const })),
   ]
-    .sort((a, b) => (a.date < b.date ? 1 : -1))
+    .sort((a, b) => {
+      if (a.created_at !== b.created_at) return a.created_at < b.created_at ? 1 : -1;
+      return a.id < b.id ? 1 : -1;
+    })
     .slice(0, 10);
 
   return (
