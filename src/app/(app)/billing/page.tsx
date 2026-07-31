@@ -171,6 +171,13 @@ export default async function BillingPage({
               Generate bills for {period}
             </button>
           </form>
+
+          <Link
+            href={`/billing/bills?period=${encodeURIComponent(period)}`}
+            className="border border-neutral-600 px-3 py-2 text-sm font-semibold"
+          >
+            View bills ({period})
+          </Link>
         </div>
 
         <div className="overflow-x-auto">
@@ -182,6 +189,7 @@ export default async function BillingPage({
               <th className="px-3 py-2 text-right">Amount</th>
               <th className="px-3 py-2">Sent</th>
               <th className="px-3 py-2">Received</th>
+              <th className="px-3 py-2">Bill</th>
             </tr>
           </thead>
           <tbody>
@@ -242,11 +250,19 @@ export default async function BillingPage({
                     </span>
                   )}
                 </td>
+                <td className="px-3 py-2">
+                  <Link
+                    href={`/billing/bills?period=${encodeURIComponent(period)}#${b.id}`}
+                    className="border border-neutral-600 px-2 py-1 text-xs whitespace-nowrap"
+                  >
+                    View bill
+                  </Link>
+                </td>
               </tr>
             ))}
             {billings.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-3 py-6 text-center text-gray-400">
+                <td colSpan={6} className="px-3 py-6 text-center text-gray-400">
                   No bills for {period} yet. Generate the run above.
                 </td>
               </tr>
