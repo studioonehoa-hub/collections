@@ -1,36 +1,24 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Koolector — Property Collections
+
+HOA dues/collections app. Next.js (App Router) + Supabase (Postgres/Auth/RLS) + Drizzle, deployed on Vercel via GitHub auto-deploy on push to `main`.
+
+- **Live URL:** https://collections-black.vercel.app
+- **Supabase project ref:** `kudetasywaalqpyrbunr`
+- **GitHub:** https://github.com/studioonehoa-hub/collections
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000). Requires a `.env.local` with `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and `DATABASE_URL` (direct Postgres connection, used only for schema/admin scripts — the app itself never uses a service-role key).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `npm run db:generate` / `npm run db:push` — Drizzle schema migrations (tables/enums only; RLS policies, views, and functions live in `supabase/sql/rls_policies.sql` and are applied separately).
+- `npm run db:seed` / `npm run db:purge` — seed/remove `TEST-`-prefixed fixture data, scoped strictly by naming convention so purge never touches real data.
+- `npm run db:studio` — Drizzle Studio.
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+See `collections-test-guide.md` for the manual walkthrough/test guide.
