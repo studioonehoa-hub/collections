@@ -17,6 +17,14 @@ export const metadata: Metadata = {
   description: "Billing and Collections Mastered",
 };
 
+// Inherited by every nested route unless overridden — keeps every function
+// in the same metro as Supabase's Tokyo (ap-northeast-1) pooler. The
+// top-level vercel.json `regions` setting covers Serverless Functions, but
+// Next.js's own region pinning for App Router functions is this export, not
+// vercel.json alone — set both since only relying on vercel.json didn't
+// change the deployed region.
+export const preferredRegion = "hnd1";
+
 export default function RootLayout({
   children,
 }: Readonly<{

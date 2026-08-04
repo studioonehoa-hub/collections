@@ -21,19 +21,18 @@ export default async function OutstandingPage({
   const period = periodParam?.trim() || currentPeriod();
   const supabase = await createClient();
 
-  const validPeriods = await getValidPeriods(supabase);
+  // None of these three depend on each other — one parallel round trip
+  // instead of three sequential ones.
+  const [validPeriods, { data: directory }, { data: billings }] = await Promise.all([
+    getValidPeriods(supabase),
+    supabase
+      .from("resident_report_directory")
+      .select("id, unit_no, name, status")
+      .eq("status", "active")
+      .returns<{ id: string; unit_no: string; name: string; status: string }[]>(),
+    supabase.from("billings").select("id, resident_id, amount").eq("period", period),
+  ]);
   const periodOptions = validPeriods.includes(period) ? validPeriods : [...validPeriods, period];
-
-  const { data: directory } = await supabase
-    .from("resident_report_directory")
-    .select("id, unit_no, name, status")
-    .eq("status", "active")
-    .returns<{ id: string; unit_no: string; name: string; status: string }[]>();
-
-  const { data: billings } = await supabase
-    .from("billings")
-    .select("id, resident_id, amount")
-    .eq("period", period);
   const noBillingRun = (billings ?? []).length === 0;
   const expectedByResident = Object.fromEntries((billings ?? []).map((b) => [b.resident_id, Number(b.amount)]));
 

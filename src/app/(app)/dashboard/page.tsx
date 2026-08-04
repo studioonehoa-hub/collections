@@ -17,31 +17,55 @@ export default async function DashboardPage() {
   const period = currentPeriod();
   const { start: monthStart, end: monthEnd } = monthBounds(new Date());
 
-  const { data: directory } = await supabase
-    .from("resident_report_directory")
-    .select("id, unit_no, name, status")
-    .eq("status", "active")
-    .returns<{ id: string; unit_no: string; name: string; status: string }[]>();
+  // Everything in this batch is independent — none of these queries depend
+  // on another's result — so they go out as one parallel round trip instead
+  // of up to six sequential ones (each sequential round trip pays the full
+  // network latency to Supabase again).
+  const [
+    { data: directory },
+    { data: monthPayments },
+    { data: monthSpecial },
+    { data: billings },
+    { data: activeLevy },
+    { data: recentPayments },
+    { data: recentSpecial },
+  ] = await Promise.all([
+    supabase
+      .from("resident_report_directory")
+      .select("id, unit_no, name, status")
+      .eq("status", "active")
+      .returns<{ id: string; unit_no: string; name: string; status: string }[]>(),
+    supabase
+      .from("payments")
+      .select("resident_id, date, amount, mode, received_by, period, status")
+      .eq("status", "active")
+      .gte("date", monthStart)
+      .lte("date", monthEnd),
+    supabase
+      .from("special_payments")
+      .select("resident_id, date, amount, mode, received_by, levy_id, status")
+      .eq("status", "active")
+      .gte("date", monthStart)
+      .lte("date", monthEnd),
+    supabase.from("billings").select("id, resident_id, amount").eq("period", period),
+    supabase.from("levies").select("id, name, amount_per_unit").eq("status", "active").maybeSingle(),
+    supabase
+      .from("payments")
+      .select("id, resident_id, date, amount, mode, received_by, status, created_at")
+      .eq("status", "active")
+      .order("date", { ascending: false })
+      .order("created_at", { ascending: false })
+      .limit(10),
+    supabase
+      .from("special_payments")
+      .select("id, resident_id, date, amount, mode, received_by, status, created_at")
+      .eq("status", "active")
+      .order("date", { ascending: false })
+      .order("created_at", { ascending: false })
+      .limit(10),
+  ]);
   const nameByResident = Object.fromEntries((directory ?? []).map((d) => [d.id, d]));
   const totalActiveUnits = directory?.length ?? 0;
-
-  const [{ data: monthPayments }, { data: monthSpecial }, { data: billings }, { data: activeLevy }] =
-    await Promise.all([
-      supabase
-        .from("payments")
-        .select("resident_id, date, amount, mode, received_by, period, status")
-        .eq("status", "active")
-        .gte("date", monthStart)
-        .lte("date", monthEnd),
-      supabase
-        .from("special_payments")
-        .select("resident_id, date, amount, mode, received_by, levy_id, status")
-        .eq("status", "active")
-        .gte("date", monthStart)
-        .lte("date", monthEnd),
-      supabase.from("billings").select("id, resident_id, amount").eq("period", period),
-      supabase.from("levies").select("id, name, amount_per_unit").eq("status", "active").maybeSingle(),
-    ]);
 
   const collectedThisMonth =
     (monthPayments ?? []).reduce((sum, p) => sum + Number(p.amount), 0) +
@@ -57,11 +81,19 @@ export default async function DashboardPage() {
 
   // "Paid" per bill comes from payment_allocations, oldest-bill-first — same
   // source as the Outstanding and Aging reports, so this figure reconciles
-  // with both rather than drifting from a payments.period tag match.
+  // with both rather than drifting from a payments.period tag match. Both
+  // queries below only depend on the first batch (billingIds, activeLevy),
+  // not on each other, so they still go out together rather than one after
+  // the other.
   const billingIds = (billings ?? []).map((b) => b.id);
-  const { data: periodAllocations } = billingIds.length
-    ? await supabase.from("payment_allocations").select("billing_id, amount").in("billing_id", billingIds)
-    : { data: [] as { billing_id: string; amount: number }[] };
+  const [{ data: periodAllocations }, { data: allSpecial }] = await Promise.all([
+    billingIds.length
+      ? supabase.from("payment_allocations").select("billing_id, amount").in("billing_id", billingIds)
+      : Promise.resolve({ data: [] as { billing_id: string; amount: number }[] }),
+    activeLevy
+      ? supabase.from("special_payments").select("amount").eq("levy_id", activeLevy.id).eq("status", "active")
+      : Promise.resolve({ data: [] as { amount: number }[] }),
+  ]);
   const paidByBillingId = new Map<string, number>();
   for (const a of periodAllocations ?? []) {
     paidByBillingId.set(a.billing_id, (paidByBillingId.get(a.billing_id) ?? 0) + Number(a.amount));
@@ -82,11 +114,6 @@ export default async function DashboardPage() {
 
   let levyLine: { name: string; collected: number; target: number; pct: number } | null = null;
   if (activeLevy) {
-    const { data: allSpecial } = await supabase
-      .from("special_payments")
-      .select("amount")
-      .eq("levy_id", activeLevy.id)
-      .eq("status", "active");
     const collected = (allSpecial ?? []).reduce((sum, s) => sum + Number(s.amount), 0);
     const target = Number(activeLevy.amount_per_unit) * totalActiveUnits;
     levyLine = {
@@ -96,21 +123,6 @@ export default async function DashboardPage() {
       pct: target > 0 ? Math.min(100, Math.round((collected / target) * 100)) : 0,
     };
   }
-
-  const { data: recentPayments } = await supabase
-    .from("payments")
-    .select("id, resident_id, date, amount, mode, received_by, status, created_at")
-    .eq("status", "active")
-    .order("date", { ascending: false })
-    .order("created_at", { ascending: false })
-    .limit(10);
-  const { data: recentSpecial } = await supabase
-    .from("special_payments")
-    .select("id, resident_id, date, amount, mode, received_by, status, created_at")
-    .eq("status", "active")
-    .order("date", { ascending: false })
-    .order("created_at", { ascending: false })
-    .limit(10);
 
   // Strictly newest -> oldest across the whole combined list, not grouped by
   // date first: primary key is the full created_at timestamp (not just the

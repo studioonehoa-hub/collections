@@ -70,20 +70,7 @@ export default async function LedgerPage({
     // instead). This is also what keeps this figure consistent with the
     // Outstanding report and Aging Report, which use the same source.
     const billingIds = (billings ?? []).map((b) => b.id);
-    const { data: allocations } = billingIds.length
-      ? await supabase.from("payment_allocations").select("billing_id, amount").in("billing_id", billingIds)
-      : { data: [] as { billing_id: string; amount: number }[] };
-    const paidByBillingId = new Map<string, number>();
-    for (const a of allocations ?? []) {
-      paidByBillingId.set(a.billing_id, (paidByBillingId.get(a.billing_id) ?? 0) + Number(a.amount));
-    }
-
     const levyIds = [...new Set((specialPayments ?? []).map((s) => s.levy_id))];
-    const { data: levies } = levyIds.length
-      ? await supabase.from("levies").select("id, name").in("id", levyIds)
-      : { data: [] as { id: string; name: string }[] };
-    const levyNameById = Object.fromEntries((levies ?? []).map((l) => [l.id, l.name]));
-
     const voiderIds = [
       ...new Set(
         [...(payments ?? []), ...(specialPayments ?? [])]
@@ -91,9 +78,24 @@ export default async function LedgerPage({
           .filter((v): v is string => v !== null),
       ),
     ];
-    const { data: voiders } = voiderIds.length
-      ? await supabase.from("staff_directory").select("id, email").in("id", voiderIds)
-      : { data: [] as { id: string; email: string }[] };
+    // None of these three depend on each other — only on the first batch
+    // above — so they go out together rather than one after another.
+    const [{ data: allocations }, { data: levies }, { data: voiders }] = await Promise.all([
+      billingIds.length
+        ? supabase.from("payment_allocations").select("billing_id, amount").in("billing_id", billingIds)
+        : Promise.resolve({ data: [] as { billing_id: string; amount: number }[] }),
+      levyIds.length
+        ? supabase.from("levies").select("id, name").in("id", levyIds)
+        : Promise.resolve({ data: [] as { id: string; name: string }[] }),
+      voiderIds.length
+        ? supabase.from("staff_directory").select("id, email").in("id", voiderIds)
+        : Promise.resolve({ data: [] as { id: string; email: string }[] }),
+    ]);
+    const paidByBillingId = new Map<string, number>();
+    for (const a of allocations ?? []) {
+      paidByBillingId.set(a.billing_id, (paidByBillingId.get(a.billing_id) ?? 0) + Number(a.amount));
+    }
+    const levyNameById = Object.fromEntries((levies ?? []).map((l) => [l.id, l.name]));
     const voiderEmailById = Object.fromEntries((voiders ?? []).map((v) => [v.id, v.email]));
 
     entries = [

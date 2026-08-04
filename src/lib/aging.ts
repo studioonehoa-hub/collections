@@ -48,7 +48,15 @@ export type AgingRow = {
  * that month), since bills don't currently carry a separate due date.
  */
 export async function buildAgingReport(supabase: SupabaseClient, asOf: Date = new Date()) {
-  const { data: billings } = await supabase.from("billings").select("id, resident_id, period, amount");
+  // billings and directory don't depend on each other — fetching the full
+  // directory (not filtered to unpaid residentIds, which would require
+  // waiting on the allocations query below first) lets both go out in one
+  // round trip instead of a three-deep sequential chain.
+  const [{ data: billings }, { data: directory }] = await Promise.all([
+    supabase.from("billings").select("id, resident_id, period, amount"),
+    supabase.from("resident_report_directory").select("id, unit_no, name"),
+  ]);
+  const directoryById = Object.fromEntries((directory ?? []).map((d) => [d.id, d]));
 
   const billingIds = (billings ?? []).map((b) => b.id);
   const { data: allocations } = billingIds.length
@@ -62,12 +70,6 @@ export async function buildAgingReport(supabase: SupabaseClient, asOf: Date = ne
   const unpaidBillings = (billings ?? [])
     .map((b) => ({ ...b, unpaid: Number(b.amount) - (paidByBillingId.get(b.id) ?? 0) }))
     .filter((b) => b.unpaid > 0.005);
-
-  const residentIds = [...new Set(unpaidBillings.map((b) => b.resident_id))];
-  const { data: directory } = residentIds.length
-    ? await supabase.from("resident_report_directory").select("id, unit_no, name").in("id", residentIds)
-    : { data: [] as { id: string; unit_no: string; name: string }[] };
-  const directoryById = Object.fromEntries((directory ?? []).map((d) => [d.id, d]));
 
   const rowsByResident = new Map<string, AgingRow>();
   for (const b of unpaidBillings) {

@@ -22,6 +22,13 @@
       "when": 1785517223407,
       "tag": "0002_exotic_dark_phoenix",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1785834378896,
+      "tag": "0003_shocking_lilith",
+      "breakpoints": true
     }
   ]
 }

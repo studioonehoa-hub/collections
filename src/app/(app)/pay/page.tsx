@@ -15,14 +15,19 @@ export default async function RecordPaymentPage({
   const { unit, saved } = await searchParams;
   const query = unit?.trim() ?? "";
   const supabase = await createClient();
-  const validPeriods = await getValidPeriods(supabase);
+
+  // getValidPeriods and resident_lookup don't depend on each other.
+  const [validPeriods, lookupResult] = await Promise.all([
+    getValidPeriods(supabase),
+    query ? supabase.rpc("resident_lookup", { p_query: query }) : Promise.resolve({ data: null }),
+  ]);
 
   let resident: ResidentRow | null = null;
   let groupLabel = "";
   let defaultAmount = "";
 
   if (query) {
-    const { data: rows } = await supabase.rpc("resident_lookup", { p_query: query });
+    const rows = lookupResult.data;
     resident = (rows?.[0] as ResidentRow | undefined) ?? null;
 
     if (resident) {

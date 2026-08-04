@@ -23,20 +23,22 @@ export default async function BillingPage({
   const period = periodParam?.trim() || currentPeriod();
   const supabase = await createClient();
 
-  const validPeriods = await getValidPeriods(supabase);
+  // None of these three depend on each other — one parallel round trip
+  // instead of three sequential ones.
+  const [validPeriods, { data: groups }, { data: billingsRaw }] = await Promise.all([
+    getValidPeriods(supabase),
+    supabase
+      .from("dues_group_summary")
+      .select("id, name, monthly_amount, member_count")
+      .order("name")
+      .returns<DuesGroupSummaryRow[]>(),
+    supabase
+      .from("billings")
+      .select("id, resident_id, period, amount, sent_via, sent_at, received_status, received_at")
+      .eq("period", period)
+      .returns<BillingRow[]>(),
+  ]);
   const periodOptions = validPeriods.includes(period) ? validPeriods : [...validPeriods, period];
-
-  const { data: groups } = await supabase
-    .from("dues_group_summary")
-    .select("id, name, monthly_amount, member_count")
-    .order("name")
-    .returns<DuesGroupSummaryRow[]>();
-
-  const { data: billingsRaw } = await supabase
-    .from("billings")
-    .select("id, resident_id, period, amount, sent_via, sent_at, received_status, received_at")
-    .eq("period", period)
-    .returns<BillingRow[]>();
 
   const residentIds = (billingsRaw ?? []).map((b) => b.resident_id);
   const { data: directory } = residentIds.length

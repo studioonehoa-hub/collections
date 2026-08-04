@@ -25,11 +25,6 @@ export default async function SpecialPaymentPage({
 
   let resident: ResidentRow | null = null;
 
-  if (levy && query) {
-    const { data: rows } = await supabase.rpc("resident_lookup", { p_query: query });
-    resident = (rows?.[0] as ResidentRow | undefined) ?? null;
-  }
-
   // Levy progress: encoder never sees name+unit in aggregate (unit-only
   // resident_directory), matching the same rule Billing/Outstanding/Dashboard
   // follow — only super_admin/admin get resident_report_directory's name.
@@ -38,18 +33,23 @@ export default async function SpecialPaymentPage({
 
   if (levy) {
     const directoryTable = user.role === "encoder" ? "resident_directory" : "resident_report_directory";
-    const { data: directory } = await supabase
-      .from(directoryTable)
-      .select(user.role === "encoder" ? "id, unit_no, status" : "id, unit_no, name, status")
-      .eq("status", "active")
-      .order("unit_no")
-      .returns<{ id: string; unit_no: string; name?: string; status: string }[]>();
-
-    const { data: payments } = await supabase
-      .from("special_payments")
-      .select("resident_id, amount, date, status")
-      .eq("levy_id", levy.id)
-      .eq("status", "active");
+    // resident_lookup, directory, and this levy's payments only depend on
+    // `levy`/`query`, not on each other — one round trip instead of three.
+    const [lookupResult, { data: directory }, { data: payments }] = await Promise.all([
+      query ? supabase.rpc("resident_lookup", { p_query: query }) : Promise.resolve({ data: null }),
+      supabase
+        .from(directoryTable)
+        .select(user.role === "encoder" ? "id, unit_no, status" : "id, unit_no, name, status")
+        .eq("status", "active")
+        .order("unit_no")
+        .returns<{ id: string; unit_no: string; name?: string; status: string }[]>(),
+      supabase
+        .from("special_payments")
+        .select("resident_id, amount, date, status")
+        .eq("levy_id", levy.id)
+        .eq("status", "active"),
+    ]);
+    resident = (lookupResult.data?.[0] as ResidentRow | undefined) ?? null;
 
     const paidByResident = new Map<string, { total: number; lastDate: string }>();
     for (const p of payments ?? []) {
